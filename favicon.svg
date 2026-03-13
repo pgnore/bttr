@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <!-- Scan line pattern -->
+    <pattern id="scanlines" patternUnits="userSpaceOnUse" width="32" height="4">
+      <rect width="32" height="2" fill="rgba(0,255,65,0.04)"/>
+      <rect y="2" width="32" height="2" fill="transparent"/>
+    </pattern>
+    <!-- Subtle glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="0.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Dark background -->
+  <rect width="32" height="32" rx="4" fill="#0a0a0a"/>
+
+  <!-- Scan lines overlay -->
+  <rect width="32" height="32" rx="4" fill="url(#scanlines)"/>
+
+  <!-- Letter B in monospace/terminal style -->
+  <text
+    x="9"
+    y="24"
+    font-family="'Courier New', 'Lucida Console', monospace"
+    font-size="24"
+    font-weight="bold"
+    fill="#00ff41"
+    filter="url(#glow)"
+  >B</text>
+
+  <!-- Blinking cursor -->
+  <rect x="22" y="10" width="3" height="14" fill="#00ff41" opacity="0.85">
+    <animate attributeName="opacity" values="0.85;0;0.85" dur="1.2s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Glitch line effect -->
+  <rect x="0" y="14" width="32" height="1" fill="#00ff41" opacity="0.08"/>
+  <rect x="0" y="22" width="32" height="1" fill="#00ff41" opacity="0.05"/>
+</svg>

@@ -1,0 +1,4267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTTR — The Better Framework</title>
+<meta name="description" content="BTTR: Build, Test, Trash, Repeat. The product management framework for the AI era. RICE is dead. Start shipping.">
+<meta property="og:title" content="BTTR — The Better Framework">
+<meta property="og:description" content="Build, Test, Trash, Repeat. The product management framework for the AI era.">
+<meta property="og:image" content="og-image.svg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BTTR — The Better Framework">
+<meta name="twitter:description" content="Build, Test, Trash, Repeat. The product management framework for the AI era.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/splitting@1.0.6/dist/splitting.css">
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a0a;
+  --bg-alt: #111111;
+  --surface: #111111;
+  --surface-raised: #141414;
+  --border: #1a1a1a;
+  --border-light: #222222;
+  --text: #e5e5e5;
+  --text-secondary: #999999;
+  --text-muted: #666666;
+  --green: #22c55e;
+  --green-dim: rgba(34, 197, 94, 0.15);
+  --green-glow: rgba(34, 197, 94, 0.3);
+  --red: #ef4444;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --max-width: 1440px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --px: clamp(24px, 5vw, 80px);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--green);
+  color: #000;
+}
+
+/* ===================== SCROLL PROGRESS BAR ===================== */
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: var(--green);
+  z-index: 9999;
+  pointer-events: none;
+  will-change: transform;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+/* ===================== LAYOUT ===================== */
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--px);
+}
+
+section {
+  padding: clamp(100px, 14vw, 160px) 0;
+  position: relative;
+}
+
+/* ===================== SECTION LABELS ===================== */
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 1.5rem;
+}
+
+/* ===================== SPLITTING.JS OVERRIDES ===================== */
+
+[data-splitting] .char {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+[data-splitting] .word {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* ===================== HERO ===================== */
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-grid-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.hero-grid-bg::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background-image:
+    radial-gradient(circle, var(--green) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.06;
+  animation: gridPulse 8s ease-in-out infinite;
+}
+
+.hero-grid-bg::after {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background-image:
+    linear-gradient(var(--green) 1px, transparent 1px),
+    linear-gradient(90deg, var(--green) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.03;
+  animation: gridShift 12s ease-in-out infinite alternate;
+}
+
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.06; transform: scale(1); }
+  50% { opacity: 0.09; transform: scale(1.02); }
+}
+
+@keyframes gridShift {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(24px, 24px); }
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-width);
+  padding: 0 var(--px);
+}
+
+.hero-brand {
+  font-family: var(--font-mono);
+  font-size: clamp(8rem, 18vw, 15rem);
+  font-weight: 700;
+  line-height: 0.85;
+  color: var(--green);
+  letter-spacing: -0.04em;
+  margin-bottom: 0.25em;
+}
+
+.hero-framework {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-weight: 400;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.6rem;
+}
+
+.hero-tagline {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+}
+
+.hero-prompt {
+  font-family: var(--font-mono);
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  color: var(--green);
+  margin-bottom: 3rem;
+}
+
+.hero-prompt .cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1.1em;
+  background: var(--green);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 2.5rem;
+  background: transparent;
+  color: var(--green);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  border: 1.5px solid var(--green);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  margin-bottom: 3rem;
+}
+
+.hero-cta:hover {
+  background: var(--green);
+  color: #000;
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.2);
+}
+
+.hero-cta svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s ease;
+}
+
+.hero-cta:hover svg {
+  transform: translateX(3px);
+}
+
+.hero-meta {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ===================== TWO-COLUMN LAYOUT ===================== */
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: center;
+}
+
+.split--55-45 {
+  grid-template-columns: 55fr 45fr;
+}
+
+.split--45-55 {
+  grid-template-columns: 45fr 55fr;
+}
+
+/* ===================== THE PROBLEM ===================== */
+
+.problem-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+}
+
+.problem-body {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.rice-card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: clamp(28px, 3.5vw, 40px);
+  position: relative;
+  box-shadow: 0 4px 60px rgba(0,0,0,0.3);
+  transition: transform 0.8s var(--ease), box-shadow 0.8s var(--ease);
+  will-change: transform;
+}
+
+.rice-card.struck {
+  transform: perspective(800px) rotateY(-2deg) rotateX(1deg);
+}
+
+.rice-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.rice-card-title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.rice-card-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.rice-card-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border-light);
+}
+
+.rice-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+.rice-row:last-of-type {
+  border-bottom: none;
+}
+
+.rice-row-label {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.rice-row-value {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.rice-row--effort {
+  position: relative;
+  transition: opacity 0.6s ease;
+}
+
+.rice-row--effort .rice-strike {
+  position: absolute;
+  top: 50%;
+  left: -4px;
+  right: -4px;
+  height: 2px;
+  background: var(--green);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease);
+}
+
+.rice-card.struck .rice-row--effort {
+  opacity: 0.3;
+}
+
+.rice-card.struck .rice-row--effort .rice-strike {
+  transform: scaleX(1);
+}
+
+.rice-result {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  transition: opacity 0.6s ease;
+}
+
+.rice-card.struck .rice-result {
+  opacity: 0.15;
+}
+
+/* Interactive RICE slider rows */
+.rice-row--interactive {
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  gap: 12px;
+}
+
+.rice-row--interactive .rice-row-label {
+  font-weight: 500;
+  color: var(--text);
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.rice-row--interactive .rice-row-value {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  min-width: 50px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.rice-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  background: var(--border-light);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.rice-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  border: 2px solid var(--bg);
+  cursor: grab;
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.rice-slider::-webkit-slider-thumb:hover {
+  background: var(--text);
+  transform: scale(1.2);
+}
+
+.rice-slider:active::-webkit-slider-thumb {
+  cursor: grabbing;
+}
+
+/* Effort slider — turns red as it approaches zero */
+.rice-slider--effort::-webkit-slider-thumb {
+  background: var(--text-secondary);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rice-slider--effort.danger::-webkit-slider-thumb {
+  background: var(--red);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+.rice-slider--effort.danger {
+  background: linear-gradient(90deg, var(--red), var(--border-light));
+}
+
+/* RICE score display */
+.rice-score-display {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.rice-score-number {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--text);
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.rice-score-number.escalating {
+  color: var(--red);
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+.rice-score-number.broken {
+  color: var(--red);
+  text-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+}
+
+/* Glitch overlay */
+.rice-glitch-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.rice-glitch-overlay.active {
+  opacity: 1;
+}
+
+/* Scanlines */
+.rice-glitch-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(239, 68, 68, 0.03) 2px,
+    rgba(239, 68, 68, 0.03) 4px
+  );
+  animation: scanlineScroll 0.1s linear infinite;
+}
+
+@keyframes scanlineScroll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
+/* Screen shake */
+@keyframes cardShake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-3px, -2px) rotate(-0.5deg); }
+  20% { transform: translate(3px, 1px) rotate(0.5deg); }
+  30% { transform: translate(-2px, 3px) rotate(-0.3deg); }
+  40% { transform: translate(2px, -1px) rotate(0.3deg); }
+  50% { transform: translate(-1px, 2px) rotate(-0.2deg); }
+  60% { transform: translate(3px, -2px) rotate(0.4deg); }
+  70% { transform: translate(-3px, 1px) rotate(-0.4deg); }
+  80% { transform: translate(1px, -3px) rotate(0.2deg); }
+  90% { transform: translate(-2px, 2px) rotate(-0.3deg); }
+}
+
+.rice-card.shaking {
+  animation: cardShake 0.15s ease-in-out infinite;
+}
+
+/* Crack line */
+.rice-crack {
+  position: absolute;
+  top: -10%;
+  left: 45%;
+  width: 2px;
+  height: 0;
+  background: var(--red);
+  z-index: 11;
+  transform: rotate(12deg);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  transition: height 0.3s ease;
+}
+
+.rice-card.cracked .rice-crack {
+  height: 120%;
+}
+
+/* BTTR reveal — overlays the broken RICE card */
+.rice-bttr-reveal {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+  border: 1px solid var(--green);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  opacity: 0;
+  z-index: 20;
+  pointer-events: none;
+  box-shadow: 0 0 40px rgba(34, 197, 94, 0.1);
+}
+
+.rice-bttr-reveal.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.rice-bttr-reveal-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--green);
+}
+
+.rice-bttr-reveal-formula {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  font-weight: 600;
+}
+
+.rice-bttr-reveal-formula .pill-keep {
+  padding: 8px 16px;
+  background: var(--green-dim);
+  border: 1px solid var(--green);
+  border-radius: 8px;
+  color: var(--green);
+}
+
+.rice-bttr-reveal-formula .pill-op {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.rice-bttr-reveal-formula .pill-signal {
+  padding: 8px 16px;
+  background: var(--green-dim);
+  border: 1px solid var(--green);
+  border-radius: 8px;
+  color: var(--green);
+  font-weight: 700;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+}
+
+.rice-bttr-reveal-msg {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--green);
+  opacity: 0.7;
+}
+
+/* Division by zero flash */
+@keyframes divZeroFlash {
+  0%, 100% { opacity: 0; }
+  15%, 85% { opacity: 1; }
+}
+
+.rice-divzero {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 15;
+  opacity: 0;
+  pointer-events: none;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.rice-divzero-text {
+  font-family: var(--font-mono);
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  font-weight: 700;
+  color: var(--red);
+  text-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
+  letter-spacing: 0.05em;
+}
+
+.rice-footnote {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--green);
+  margin-top: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.6s ease 0.3s;
+  text-align: center;
+}
+
+.rice-footnote.show {
+  opacity: 1;
+}
+
+/* ===================== THESIS ===================== */
+
+.thesis-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+}
+
+.thesis-body {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+/* Equation Visual — Before / After layout */
+.equation-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: clamp(24px, 3vw, 40px);
+}
+
+.eq-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.eq-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.eq-label--bttr {
+  color: var(--green);
+}
+
+.eq-pill {
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 1.3vw, 1rem);
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-light);
+  color: var(--text);
+  transition: all 0.6s var(--ease);
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+
+.eq-operator {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  transition: all 0.6s var(--ease);
+}
+
+.eq-divider {
+  display: flex;
+  align-items: center;
+  padding: 12px 0 12px 44px;
+}
+
+.eq-divider-arrow {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  transition: color 0.6s var(--ease);
+}
+
+/* Effort pill — struck through */
+.eq-pill--effort,
+.eq-pill--confidence {
+  position: relative;
+  transition: all 0.6s var(--ease);
+}
+
+.eq-pill--effort::after,
+.eq-pill--confidence::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -4px;
+  right: -4px;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s var(--ease);
+}
+
+/* Struck state — triggered by JS on scroll */
+.equation-visual.struck .eq-pill--effort,
+.equation-visual.struck .eq-pill--confidence {
+  opacity: 0.3;
+  transform: scale(0.9);
+  border-color: var(--red);
+  color: var(--text-muted);
+}
+
+.equation-visual.struck .eq-pill--effort::after,
+.equation-visual.struck .eq-pill--confidence::after {
+  transform: scaleX(1);
+}
+
+.equation-visual.struck .eq-op-effort {
+  opacity: 0.3;
+  color: var(--red);
+}
+
+.equation-visual.struck .eq-row--after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.equation-visual.struck .eq-pill--glow {
+  border-color: var(--green);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+  color: var(--green);
+}
+
+.equation-visual.struck .eq-pill--signal {
+  border-color: var(--green);
+  box-shadow: 0 0 24px rgba(34, 197, 94, 0.2);
+}
+
+.equation-visual.struck .eq-divider-arrow {
+  color: var(--green);
+}
+
+/* Before animation: after row starts hidden */
+.eq-row--after {
+  opacity: 0.3;
+  transform: translateY(6px);
+  transition: all 0.6s var(--ease);
+}
+
+.eq-pill--signal {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* ===================== BTTR CYCLE ===================== */
+
+.cycle-header {
+  text-align: center;
+  margin-bottom: clamp(48px, 8vw, 80px);
+}
+
+.cycle-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.cycle-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
+  color: var(--text-muted);
+}
+
+/* Pipeline layout */
+.cycle-pipeline {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* The horizontal track line — aligned with station dots */
+.cycle-track {
+  position: absolute;
+  top: 6px;
+  left: calc(12.5% + 7px);
+  right: calc(12.5% + 7px);
+  height: 2px;
+  background: var(--border-light);
+  z-index: 0;
+}
+
+.cycle-track-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background: var(--green);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+}
+
+/* The traveling dot — centered on track */
+.cycle-dot {
+  position: absolute;
+  top: -2px;
+  left: calc(12.5% + 2px);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.2);
+  z-index: 3;
+  will-change: left;
+}
+
+.cycle-dot::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+
+/* The 4 phases in a row */
+.cycle-phases {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.cycle-phase-item {
+  text-align: center;
+  padding: 0 clamp(12px, 2vw, 24px);
+  position: relative;
+}
+
+/* Station dot on the track */
+.cycle-station {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--border-light);
+  background: var(--bg);
+  margin: 0 auto 40px;
+  position: relative;
+  z-index: 2;
+  transition: all 0.5s var(--ease);
+}
+
+.cycle-phase-item.active .cycle-station {
+  border-color: var(--green);
+  background: var(--green);
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.4);
+}
+
+/* Phase number */
+.cycle-number {
+  font-family: var(--font-mono);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  color: var(--border-light);
+  line-height: 1;
+  margin-bottom: 0.75rem;
+  transition: color 0.5s var(--ease);
+}
+
+.cycle-phase-item.active .cycle-number {
+  color: var(--green-dim);
+}
+
+/* Phase name */
+.cycle-phase-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 800;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  transition: color 0.5s var(--ease);
+  letter-spacing: -0.02em;
+}
+
+.cycle-phase-item.active .cycle-phase-name {
+  color: var(--green);
+}
+
+/* Phase description */
+.cycle-phase-desc {
+  font-family: var(--font-body);
+  font-size: clamp(0.85rem, 1.1vw, 0.95rem);
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 240px;
+  margin: 0 auto;
+  transition: color 0.5s var(--ease);
+}
+
+.cycle-phase-item.active .cycle-phase-desc {
+  color: var(--text-secondary);
+}
+
+/* Terminal-style command below the pipeline */
+.cycle-terminal {
+  margin-top: clamp(48px, 6vw, 72px);
+  text-align: center;
+}
+
+.cycle-command {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+  color: var(--green);
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 16px 32px;
+  letter-spacing: 0.02em;
+}
+
+.cycle-command .cmd-prefix {
+  color: var(--text-muted);
+}
+
+.cycle-command .cmd-active {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.cycle-command .cmd-muted {
+  color: var(--text-muted);
+}
+
+/* Loop-back arrow */
+.cycle-loop {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.cycle-loop svg {
+  width: 200px;
+  height: 40px;
+  overflow: visible;
+}
+
+.cycle-loop-path {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 6 4;
+  opacity: 0.4;
+}
+
+/* ===================== THE CONTRAST ===================== */
+
+.contrast-header {
+  text-align: center;
+  margin-bottom: clamp(48px, 8vw, 80px);
+}
+
+.contrast-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.contrast-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(20px, 3vw, 32px);
+}
+
+.contrast-card {
+  border-radius: 12px;
+  padding: clamp(32px, 4vw, 48px);
+  min-height: 420px;
+  will-change: transform;
+}
+
+.contrast-card--rice {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.contrast-card--bttr {
+  background: var(--surface);
+  border: 1px solid var(--green);
+  box-shadow: 0 0 40px rgba(34, 197, 94, 0.06);
+}
+
+.contrast-card-label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.contrast-card--rice .contrast-card-label {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.contrast-card--bttr .contrast-card-label {
+  color: var(--green);
+}
+
+.contrast-tagline {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.contrast-card--rice .contrast-tagline {
+  color: var(--text-muted);
+}
+
+.contrast-card--bttr .contrast-tagline {
+  color: var(--text);
+}
+
+/* Timeline steps */
+.timeline {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.timeline-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  font-family: var(--font-body);
+  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+  position: relative;
+}
+
+.timeline-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-step::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 0;
+}
+
+.timeline-step:first-child::before {
+  top: 50%;
+}
+
+.timeline-step:last-child::before {
+  bottom: 50%;
+}
+
+/* RICE timeline */
+.contrast-card--rice .timeline-circle {
+  background: var(--text-muted);
+  opacity: 0.5;
+}
+
+.contrast-card--rice .timeline-step::before {
+  background: var(--border);
+}
+
+.contrast-card--rice .timeline-step {
+  color: var(--text-muted);
+}
+
+/* BTTR timeline */
+.contrast-card--bttr .timeline-circle {
+  background: var(--green);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+.contrast-card--bttr .timeline-circle::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid var(--green);
+  opacity: 0;
+  animation: circlePulse 2s ease-in-out infinite;
+}
+
+.contrast-card--bttr .timeline-step:nth-child(1) .timeline-circle::after { animation-delay: 0s; }
+.contrast-card--bttr .timeline-step:nth-child(2) .timeline-circle::after { animation-delay: 0.3s; }
+.contrast-card--bttr .timeline-step:nth-child(3) .timeline-circle::after { animation-delay: 0.6s; }
+.contrast-card--bttr .timeline-step:nth-child(4) .timeline-circle::after { animation-delay: 0.9s; }
+.contrast-card--bttr .timeline-step:nth-child(5) .timeline-circle::after { animation-delay: 1.2s; }
+.contrast-card--bttr .timeline-step:nth-child(6) .timeline-circle::after { animation-delay: 1.5s; }
+
+@keyframes circlePulse {
+  0%, 100% { opacity: 0; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.5); }
+}
+
+.contrast-card--bttr .timeline-step::before {
+  background: var(--green);
+  opacity: 0.3;
+}
+
+.contrast-card--bttr .timeline-step {
+  color: var(--text-secondary);
+}
+
+/* ===================== MANIFESTO ===================== */
+
+.manifesto-header {
+  text-align: center;
+  margin-bottom: clamp(48px, 8vw, 80px);
+}
+
+.manifesto-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.manifesto-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.manifesto-item {
+  padding: clamp(32px, 5vw, 56px) 0;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  transition: border-color 0.4s ease;
+  will-change: transform;
+}
+
+.manifesto-item:last-child {
+  border-bottom: none;
+}
+
+.manifesto-item:hover {
+  border-color: var(--green);
+}
+
+.manifesto-item-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(24px, 4vw, 48px);
+}
+
+.manifesto-number {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 8vw, 7rem);
+  font-weight: 800;
+  color: var(--border-light);
+  line-height: 0.85;
+  flex-shrink: 0;
+  min-width: 100px;
+  transition: color 0.4s ease;
+  user-select: none;
+}
+
+.manifesto-item:hover .manifesto-number {
+  color: var(--green-dim);
+}
+
+.manifesto-content {
+  flex: 1;
+  padding-top: 0.5rem;
+}
+
+.manifesto-principle {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.manifesto-explanation {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ===================== CTA ===================== */
+
+.cta-section {
+  background: linear-gradient(180deg, var(--bg-alt) 0%, var(--bg) 100%);
+  text-align: center;
+  position: relative;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--green), transparent);
+  opacity: 0.3;
+}
+
+.cta-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 2.5rem;
+}
+
+.cta-form {
+  display: flex;
+  gap: 0;
+  max-width: 520px;
+  margin: 0 auto 1.5rem;
+}
+
+.cta-input {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.cta-input::placeholder {
+  color: var(--text-muted);
+}
+
+.cta-input:focus {
+  border-color: var(--green);
+}
+
+.cta-button {
+  padding: 1rem 2rem;
+  background: var(--green);
+  color: #000;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 1px solid var(--green);
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease, box-shadow 0.3s ease;
+  white-space: nowrap;
+}
+
+.cta-button:hover {
+  opacity: 0.9;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+.cta-note {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.cta-success {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--green);
+  padding: 1rem 1.5rem;
+  background: var(--green-dim);
+  border: 1px solid var(--green);
+  border-radius: 8px;
+  max-width: 520px;
+  margin: 0 auto 1.5rem;
+}
+
+.cta-success.show {
+  display: flex;
+}
+
+.cta-checkmark {
+  width: 24px;
+  height: 24px;
+}
+
+.cta-checkmark circle {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 2;
+}
+
+.cta-checkmark path {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+}
+
+.cta-success.show .cta-checkmark path {
+  animation: checkDraw 0.5s ease forwards 0.2s;
+}
+
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ===================== FOOTER ===================== */
+
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding: clamp(40px, 6vw, 64px) var(--px);
+  text-align: center;
+}
+
+.footer-brand {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.05em;
+}
+
+.footer-tagline {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+}
+
+.footer-version {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--green);
+  margin-top: 1.25rem;
+  opacity: 0.6;
+}
+
+.footer-copy {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  opacity: 0.5;
+}
+
+/* ===================== BET TEMPLATE ===================== */
+
+.bet-header {
+  text-align: center;
+  margin-bottom: clamp(48px, 8vw, 80px);
+}
+
+.bet-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.bet-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
+  color: var(--text-muted);
+}
+
+.bet-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 3vw, 40px);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.bet-card {
+  background: var(--surface);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  will-change: transform;
+  display: flex;
+  flex-direction: column;
+}
+
+.bet-card--good {
+  border-color: var(--green);
+  box-shadow: 0 0 40px rgba(34, 197, 94, 0.06);
+}
+
+.bet-card--bad {
+  border-color: var(--red);
+  box-shadow: 0 0 40px rgba(239, 68, 68, 0.04);
+}
+
+.bet-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--surface-raised);
+  border-bottom: 1px solid var(--border);
+}
+
+.bet-card-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.bet-card--good .bet-card-title {
+  color: var(--green);
+}
+
+.bet-card--bad .bet-card-title {
+  color: var(--red);
+}
+
+.bet-card-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.bet-card-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-light);
+}
+
+.bet-card--good .bet-card-dots span:first-child { background: var(--green); opacity: 0.6; }
+.bet-card--bad .bet-card-dots span:first-child { background: var(--red); opacity: 0.6; }
+
+.bet-card-body {
+  padding: clamp(24px, 3vw, 36px);
+  font-family: var(--font-mono);
+  font-size: clamp(0.82rem, 1.05vw, 0.92rem);
+  line-height: 1.9;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bet-line {
+  display: flex;
+  gap: 0.75em;
+  position: relative;
+}
+
+.bet-label {
+  color: var(--green);
+  font-weight: 700;
+  flex-shrink: 0;
+  min-width: 80px;
+}
+
+.bet-card--bad .bet-label {
+  color: var(--red);
+}
+
+.bet-value {
+  color: var(--text-secondary);
+}
+
+.bet-card--bad .bet-value {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: text-decoration-color 0.5s ease, opacity 0.5s ease;
+  text-decoration-color: transparent;
+}
+
+.bet-card--bad.struck .bet-value {
+  text-decoration: line-through;
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 1.5px;
+  opacity: 0.4;
+}
+
+.bet-card--bad.struck .bet-line:nth-child(1) .bet-value { transition-delay: 0s; }
+.bet-card--bad.struck .bet-line:nth-child(2) .bet-value { transition-delay: 0.15s; }
+.bet-card--bad.struck .bet-line:nth-child(3) .bet-value { transition-delay: 0.3s; }
+
+.bet-card-verdict {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.bet-card--good .bet-card-verdict {
+  color: var(--green);
+}
+
+.bet-card--bad .bet-card-verdict {
+  color: var(--red);
+}
+
+/* --- Bet Template --- */
+
+.bet-template {
+  max-width: 1100px;
+  margin: clamp(40px, 6vw, 64px) auto 0;
+  text-align: center;
+}
+
+.bet-template-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.bet-template-lines {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: clamp(0.78rem, 1vw, 0.88rem);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 32px;
+  text-align: left;
+  line-height: 2.2;
+}
+
+.bet-template-line .bet-label {
+  color: var(--green);
+}
+
+.bet-placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+  opacity: 0.5;
+}
+
+/* ===================== FULL STORY ===================== */
+
+.story-header {
+  text-align: center;
+  margin-bottom: clamp(48px, 8vw, 80px);
+}
+
+.story-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.story-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
+  color: var(--text-muted);
+}
+
+.story-product {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.story-timeline {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  padding-left: 48px;
+}
+
+/* Vertical connector line */
+.story-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 18px;
+  width: 2px;
+  background: var(--border-light);
+}
+
+.story-cycle {
+  position: relative;
+  margin-bottom: clamp(40px, 5vw, 64px);
+  will-change: transform;
+}
+
+.story-cycle:last-child {
+  margin-bottom: 0;
+}
+
+/* Cycle number dot on the timeline */
+.story-cycle-dot {
+  position: absolute;
+  left: -48px;
+  top: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  z-index: 2;
+  border: 2px solid var(--border-light);
+  background: var(--bg);
+  color: var(--text-muted);
+  transition: all 0.5s var(--ease);
+}
+
+.story-cycle.revealed .story-cycle-dot {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.story-card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.story-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px clamp(20px, 3vw, 28px);
+  border-bottom: 1px solid var(--border);
+}
+
+.story-bet-title {
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+
+.story-outcome-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 100px;
+  flex-shrink: 0;
+  transform: scale(0);
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.story-cycle.revealed .story-outcome-badge {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.story-outcome-badge--iterate {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--green);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.story-outcome-badge--pivot {
+  background: rgba(234, 179, 8, 0.12);
+  color: #eab308;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.story-outcome-badge--trash {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--red);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.story-phases {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.story-phase {
+  padding: clamp(14px, 2vw, 20px) clamp(12px, 2vw, 20px);
+  border-right: 1px solid var(--border);
+}
+
+.story-phase:last-child {
+  border-right: none;
+}
+
+.story-phase-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.story-phase-value {
+  font-family: var(--font-body);
+  font-size: clamp(0.78rem, 1vw, 0.85rem);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.story-phase-duration {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--green);
+  margin-top: 6px;
+}
+
+.story-signal {
+  padding: 12px clamp(20px, 3vw, 28px);
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 0.9vw, 0.82rem);
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.story-signal-number {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.story-summary {
+  text-align: center;
+  margin-top: clamp(48px, 6vw, 72px);
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  font-weight: 600;
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.7;
+}
+
+.story-summary strong {
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* ===================== BTTR VS EVERYTHING ===================== */
+
+.versus-header {
+  text-align: center;
+  margin-bottom: clamp(48px, 8vw, 80px);
+}
+
+.versus-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.versus-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
+  color: var(--text-muted);
+}
+
+.versus-table {
+  max-width: 1100px;
+  margin: 0 auto;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.versus-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1.5fr 0.7fr 1.5fr 0.9fr;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+
+.versus-row:last-child {
+  border-bottom: none;
+}
+
+.versus-row:not(.versus-row--header):not(.versus-row--bttr):hover {
+  background: var(--surface-raised);
+}
+
+.versus-row--header {
+  background: transparent;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.versus-row--header .versus-col {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.5;
+  padding: 14px 20px;
+}
+
+.versus-row--bttr {
+  background: rgba(34, 197, 94, 0.04);
+  border-top: 1px solid var(--green);
+}
+
+.versus-row--bttr:hover {
+  background: rgba(34, 197, 94, 0.07);
+}
+
+.versus-col {
+  padding: 18px 20px;
+  font-family: var(--font-body);
+  font-size: clamp(0.8rem, 1vw, 0.88rem);
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.versus-col--name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.versus-fw-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(0.85rem, 1.1vw, 0.95rem);
+  color: var(--text);
+}
+
+.versus-row--bttr .versus-fw-name {
+  color: var(--green);
+}
+
+.versus-fw-era {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.versus-col--question {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.versus-row--bttr .versus-col--question {
+  color: var(--text);
+  font-style: normal;
+}
+
+.versus-col--cycle {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.versus-row--bttr .versus-col--cycle {
+  color: var(--green);
+}
+
+.versus-col--flaw {
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: clamp(0.75rem, 0.9vw, 0.82rem);
+}
+
+.versus-row--bttr .versus-col--flaw {
+  font-style: normal;
+  color: var(--text-secondary);
+}
+
+.verdict-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+
+.verdict-badge--replaces {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--red);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.verdict-badge--evolves {
+  background: rgba(251, 146, 60, 0.1);
+  color: #fb923c;
+  border: 1px solid rgba(251, 146, 60, 0.2);
+}
+
+.verdict-badge--uses {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--green);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.verdict-badge--complements {
+  background: rgba(234, 179, 8, 0.1);
+  color: #eab308;
+  border: 1px solid rgba(234, 179, 8, 0.2);
+}
+
+.verdict-badge--bttr {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--green);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.1);
+}
+
+/* ===================== HERO MAGNETIC + CYCLING ===================== */
+
+.hero-brand .char {
+  transition: transform 0.3s var(--ease);
+  display: inline-block;
+}
+
+.hero-prompt-cycle {
+  position: relative;
+  min-height: 1.5em;
+}
+
+.hero-prompt-text {
+  transition: opacity 0.3s ease;
+}
+
+.hero-prompt-text.fading {
+  opacity: 0;
+}
+
+/* ===================== THESIS DRAG-TO-TRASH ===================== */
+
+.eq-pill--effort,
+.eq-pill--confidence {
+  cursor: pointer;
+  user-select: none;
+}
+
+.eq-pill--effort:hover,
+.eq-pill--confidence:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+}
+
+.eq-trash-zone {
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1.5px dashed rgba(239, 68, 68, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: all 0.4s var(--ease);
+  z-index: 5;
+}
+
+.equation-visual.trash-ready .eq-trash-zone {
+  opacity: 1;
+}
+
+.equation-visual.trash-ready .eq-trash-zone.pulse {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: var(--red);
+  transform: scale(1.15);
+}
+
+@keyframes pillShatter {
+  0% { transform: scale(1); opacity: 1; }
+  30% { transform: scale(1.2) rotate(5deg); opacity: 0.8; }
+  60% { transform: scale(0.3) rotate(-15deg); opacity: 0.4; }
+  100% { transform: scale(0) rotate(30deg); opacity: 0; }
+}
+
+.eq-pill.shattering {
+  animation: pillShatter 0.4s ease-in forwards;
+  pointer-events: none;
+}
+
+/* ===================== CYCLE TYPEABLE TERMINAL ===================== */
+
+.cycle-command.interactive {
+  cursor: text;
+  position: relative;
+}
+
+.cycle-command-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cycle-command .cmd-typed {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.cycle-easter-egg {
+  display: none;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--red);
+  opacity: 0.8;
+}
+
+.cycle-easter-egg.show {
+  display: block;
+}
+
+/* ===================== STORY CARD EFFECTS ===================== */
+
+/* ===================== STORY COUNTING METRICS ===================== */
+
+.story-card.flash-iterate { box-shadow: 0 0 30px rgba(34, 197, 94, 0.15); }
+.story-card.flash-pivot { box-shadow: 0 0 30px rgba(234, 179, 8, 0.15); }
+.story-card.flash-trash { box-shadow: 0 0 30px rgba(239, 68, 68, 0.15); }
+
+/* ===================== CONTRAST STRIKETHROUGH ===================== */
+
+.timeline-step .step-text {
+  position: relative;
+  display: inline;
+}
+
+.timeline-step .step-strike {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 2px;
+  width: 0;
+  background: var(--red);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.contrast-card--rice .timeline-step.struck .step-strike {
+  width: 100%;
+}
+
+.contrast-card--rice .timeline-step.struck {
+  color: var(--text-muted);
+  opacity: 0.4;
+  transition: opacity 0.6s ease;
+}
+
+.contrast-card--rice .timeline-step.struck .timeline-circle {
+  background: var(--red);
+  opacity: 0.6;
+  transition: background 0.3s ease, opacity 0.3s ease;
+}
+
+.contrast-card--bttr .timeline-step.lit {
+  color: var(--text);
+  transition: color 0.4s ease;
+}
+
+.contrast-card--bttr .timeline-step.lit .timeline-circle {
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.6), 0 0 24px rgba(34, 197, 94, 0.2);
+  transition: box-shadow 0.4s ease;
+}
+
+/* ===================== VERSUS TABLE HOVER ===================== */
+
+.versus-row:not(.versus-row--header):not(.versus-row--bttr) {
+  position: relative;
+}
+
+.versus-row:not(.versus-row--header):not(.versus-row--bttr)::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: transparent;
+  transition: background 0.2s ease;
+}
+
+.versus-row[data-verdict="replaces"]:hover::after { background: var(--red); }
+.versus-row[data-verdict="evolves"]:hover::after { background: #fb923c; }
+.versus-row[data-verdict="uses"]:hover::after { background: var(--green); }
+.versus-row[data-verdict="complements"]:hover::after { background: #eab308; }
+
+/* ===================== MANIFESTO SCRAMBLE ===================== */
+
+.manifesto-number {
+  font-variant-numeric: tabular-nums;
+}
+
+.manifesto-principle-text {
+  overflow: hidden;
+}
+
+/* ===================== CTA TERMINAL ===================== */
+
+.cta-terminal-wrap {
+  max-width: 560px;
+  margin: 0 auto 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cta-terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-raised);
+}
+
+.cta-terminal-bar span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-light);
+}
+
+.cta-terminal-bar span:first-child { background: var(--red); opacity: 0.5; }
+.cta-terminal-bar span:nth-child(2) { background: #eab308; opacity: 0.5; }
+.cta-terminal-bar span:nth-child(3) { background: var(--green); opacity: 0.5; }
+
+.cta-terminal-body {
+  padding: 16px 20px;
+}
+
+.cta-terminal-line {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 1.1vw, 0.9rem);
+}
+
+.cta-terminal-prefix {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.cta-terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: inherit;
+  outline: none;
+  caret-color: var(--green);
+}
+
+.cta-terminal-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.cta-terminal-submit {
+  background: transparent;
+  border: none;
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.cta-terminal-submit:hover {
+  opacity: 1;
+}
+
+.cta-terminal-output {
+  padding: 0 20px 16px;
+  display: none;
+}
+
+.cta-terminal-output.show {
+  display: block;
+}
+
+.cta-output-line {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.8;
+  opacity: 0;
+}
+
+.cta-output-line.typed {
+  opacity: 1;
+}
+
+.cta-output-line--green {
+  color: var(--green);
+}
+
+.cta-output-line--muted {
+  color: var(--text-muted);
+}
+
+.cta-output-line--success {
+  color: var(--green);
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+}
+
+/* ===================== RESPONSIVE ===================== */
+
+@media (max-width: 900px) {
+  .split,
+  .split--55-45,
+  .split--45-55 {
+    grid-template-columns: 1fr;
+    gap: clamp(32px, 5vw, 48px);
+  }
+
+  .cycle-phases {
+    grid-template-columns: 1fr 1fr;
+    gap: 48px 0;
+  }
+
+  .cycle-track {
+    display: none;
+  }
+
+  .cycle-dot {
+    display: none;
+  }
+
+  .contrast-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contrast-card {
+    min-height: auto;
+  }
+
+  .bet-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .bet-line {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .story-phases {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .story-phase:nth-child(2) {
+    border-right: none;
+  }
+
+  .story-phase:nth-child(1),
+  .story-phase:nth-child(2) {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .versus-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 16px 20px;
+  }
+
+  .versus-row--header {
+    display: none;
+  }
+
+  .versus-col {
+    padding: 4px 0;
+  }
+
+  .versus-col--name {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .versus-col--flaw {
+    font-size: 0.75rem;
+  }
+
+  .versus-col--verdict {
+    margin-top: 8px;
+  }
+
+  .manifesto-item-inner {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .manifesto-number {
+    min-width: auto;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .hero-brand {
+    font-size: clamp(5rem, 20vw, 10rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .cta-form {
+    flex-direction: column;
+  }
+
+  .cta-input {
+    border-right: 1px solid var(--border-light);
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+  }
+
+  .cta-input:focus {
+    border-bottom: none;
+  }
+
+  .cta-button {
+    border-radius: 0 0 8px 8px;
+  }
+
+  .equation-visual {
+    padding: 20px 12px;
+  }
+
+  .eq-row {
+    gap: 6px;
+  }
+
+  .eq-label {
+    width: 36px;
+    font-size: 0.6rem;
+  }
+
+  .eq-pill {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  .eq-divider {
+    padding: 8px 0 8px 36px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Scroll Progress Bar -->
+<div class="scroll-progress" id="scroll-progress"></div>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero" aria-label="Hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-brand" data-splitting>BTTR</div>
+    <div class="hero-framework">The Better Framework</div>
+    <p class="hero-tagline">Build it. Test it. Trash it. Repeat.</p>
+    <div class="hero-prompt hero-prompt-cycle">&gt; <span class="hero-prompt-text" id="hero-prompt-text">RICE is dead. Start shipping.</span><span class="cursor"></span></div>
+    <div class="hero-cta-wrap">
+      <a href="#manifesto" class="hero-cta">
+        Read the manifesto
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+    </div>
+    <p class="hero-meta">Prioritization is dead. Here's what replaces it.</p>
+  </div>
+</section>
+
+<!-- ==================== THE PROBLEM ==================== -->
+<section aria-label="The Problem">
+  <div class="container">
+    <div class="split split--55-45">
+      <div>
+        <div class="section-label">THE PROBLEM</div>
+        <h2 class="problem-headline" data-splitting>Your prioritization framework is lying to you.</h2>
+        <p class="problem-body">RICE, WSJF, ICE — they all weight effort and complexity. When AI collapses effort to near-zero, the RICE formula hits division by zero. When you can ship and measure in days, confidence scores are theater. The entire prioritization layer is waste.</p>
+      </div>
+      <div>
+        <div class="rice-card" id="rice-scorecard">
+          <div class="rice-glitch-overlay" id="rice-glitch"></div>
+          <div class="rice-crack" id="rice-crack"></div>
+          <div class="rice-divzero" id="rice-divzero">
+            <div class="rice-divzero-text">ERR: DIVISION BY ZERO</div>
+          </div>
+          <div class="rice-bttr-reveal" id="rice-bttr-reveal">
+            <div class="rice-bttr-reveal-label">BTTR replaces RICE</div>
+            <div class="rice-bttr-reveal-formula">
+              <span class="pill-keep">Reach</span>
+              <span class="pill-op">&times;</span>
+              <span class="pill-keep">Impact</span>
+              <span class="pill-op">&rarr;</span>
+              <span class="pill-signal">Signal</span>
+            </div>
+            <div class="rice-bttr-reveal-msg">> stop scoring. start shipping.</div>
+          </div>
+          <div class="rice-card-header">
+            <div class="rice-card-title">RICE Score Calculator</div>
+            <div class="rice-card-dots">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="rice-row--interactive">
+            <span class="rice-row-label">Reach</span>
+            <input type="range" class="rice-slider" id="rice-reach" min="1000" max="20000" value="8000" step="500">
+            <span class="rice-row-value" id="rice-reach-val">8,000</span>
+          </div>
+          <div class="rice-row--interactive">
+            <span class="rice-row-label">Impact</span>
+            <input type="range" class="rice-slider" id="rice-impact" min="1" max="3" value="2" step="1">
+            <span class="rice-row-value" id="rice-impact-val">2</span>
+          </div>
+          <div class="rice-row--interactive">
+            <span class="rice-row-label">Confidence</span>
+            <input type="range" class="rice-slider" id="rice-confidence" min="10" max="100" value="60" step="5">
+            <span class="rice-row-value" id="rice-confidence-val">60%</span>
+          </div>
+          <div class="rice-row--interactive">
+            <span class="rice-row-label">Effort</span>
+            <input type="range" class="rice-slider rice-slider--effort" id="rice-effort" min="0" max="10" value="3" step="0.5">
+            <span class="rice-row-value" id="rice-effort-val">3</span>
+          </div>
+          <div class="rice-score-display">
+            <span>RICE Score</span>
+            <span class="rice-score-number" id="rice-score">3,200</span>
+          </div>
+        </div>
+        <div class="rice-footnote" id="rice-footnote">drag effort to zero.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== THE THESIS ==================== -->
+<section aria-label="The Thesis">
+  <div class="container">
+    <div class="split split--45-55">
+      <div>
+        <div class="section-label">THE THESIS</div>
+        <h2 class="thesis-headline" data-splitting>AI didn't kill your job. It killed your excuses.</h2>
+        <p class="thesis-body">When AI can prototype anything in hours, the scoring, the stack-ranking, the roadmap negotiations, the quarterly planning theater — all waste. Building IS the validation. Every framework before BTTR assumed the process creates the insight. BTTR knows the insight creates the process.</p>
+      </div>
+      <div>
+        <div class="equation-visual" id="equation-visual" style="position:relative;">
+          <div class="eq-trash-zone" id="eq-trash-zone">🗑</div>
+          <div class="eq-row eq-row--before">
+            <span class="eq-label">RICE</span>
+            <span class="eq-pill eq-pill--keep">Reach</span>
+            <span class="eq-operator">&times;</span>
+            <span class="eq-pill eq-pill--keep">Impact</span>
+            <span class="eq-operator">&times;</span>
+            <span class="eq-pill eq-pill--confidence" id="pill-confidence">Confidence</span>
+            <span class="eq-operator eq-op-effort">/</span>
+            <span class="eq-pill eq-pill--effort" id="pill-effort">Effort</span>
+          </div>
+          <div class="eq-divider">
+            <span class="eq-divider-arrow">&darr;</span>
+          </div>
+          <div class="eq-row eq-row--after">
+            <span class="eq-label eq-label--bttr">BTTR</span>
+            <span class="eq-pill eq-pill--keep eq-pill--glow">Reach</span>
+            <span class="eq-operator">&times;</span>
+            <span class="eq-pill eq-pill--keep eq-pill--glow">Impact</span>
+            <span class="eq-operator">&rarr;</span>
+            <span class="eq-pill eq-pill--signal">Signal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== THE BTTR CYCLE ==================== -->
+<section aria-label="The BTTR Cycle">
+  <div class="container">
+    <div class="cycle-header">
+      <div class="section-label">THE FRAMEWORK</div>
+      <h2 class="cycle-headline" data-splitting>The BTTR Cycle</h2>
+      <p class="cycle-subtitle">Four phases. Your cadence. No scoring. Just evidence.</p>
+    </div>
+
+    <div class="cycle-pipeline" id="cycle-pipeline">
+      <!-- Horizontal track -->
+      <div class="cycle-track">
+        <div class="cycle-track-fill" id="cycle-track-fill"></div>
+      </div>
+      <!-- Traveling dot -->
+      <div class="cycle-dot" id="cycle-dot"></div>
+
+      <!-- 4 phases in a row -->
+      <div class="cycle-phases">
+        <div class="cycle-phase-item" data-phase="0">
+          <div class="cycle-station"></div>
+          <div class="cycle-number">01</div>
+          <div class="cycle-phase-name">Build</div>
+          <p class="cycle-phase-desc">Write a bet in 3 lines: problem, bet, test. AI builds, you direct. The prototype IS the proposal.</p>
+        </div>
+        <div class="cycle-phase-item" data-phase="1">
+          <div class="cycle-station"></div>
+          <div class="cycle-number">02</div>
+          <div class="cycle-phase-name">Test</div>
+          <p class="cycle-phase-desc">Put it in front of real signals. Usage data, not stakeholder opinions in a conference room.</p>
+        </div>
+        <div class="cycle-phase-item" data-phase="2">
+          <div class="cycle-station"></div>
+          <div class="cycle-number">03</div>
+          <div class="cycle-phase-name">Trash</div>
+          <p class="cycle-phase-desc">Didn't work? Kill it. When AI built it in an afternoon, sunk cost is a myth.</p>
+        </div>
+        <div class="cycle-phase-item" data-phase="3">
+          <div class="cycle-station"></div>
+          <div class="cycle-number">04</div>
+          <div class="cycle-phase-name">Repeat</div>
+          <p class="cycle-phase-desc">Iterate or pivot. Take what you learned, start the next cycle. Every bet compounds insight.</p>
+        </div>
+      </div>
+
+      <!-- Terminal command -->
+      <div class="cycle-terminal">
+        <div class="cycle-command interactive" id="cycle-command" tabindex="0">
+          <span class="cmd-prefix">&gt; bttr</span> <span class="cmd-active" id="cmd-phase">build</span> <span class="cmd-muted" id="cmd-flag">--ship-fast</span><span class="cursor"></span>
+        </div>
+        <div class="cycle-easter-egg" id="cycle-easter-egg"></div>
+      </div>
+
+      <!-- Loop-back arrow -->
+      <div class="cycle-loop">
+        <svg viewBox="0 0 200 40" fill="none">
+          <path class="cycle-loop-path" d="M 170 5 C 190 5, 195 20, 180 30 L 30 30 C 10 30, 5 20, 20 10" id="loop-path"/>
+          <polygon fill="var(--green)" opacity="0.4" points="15,14 25,8 22,17"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== THE CYCLE ==================== -->
+<section aria-label="The Cycle Format">
+  <div class="container">
+    <div class="bet-header">
+      <div class="section-label">THE CYCLE</div>
+      <h2 class="bet-headline" data-splitting>Idea first. Process second.</h2>
+      <p class="bet-subtitle">Every cycle is three moves. The idea creates the process — not the other way around.</p>
+    </div>
+
+    <div class="bet-cards">
+      <div class="bet-card bet-card--good" id="bet-good">
+        <div class="bet-card-header">
+          <span class="bet-card-title">sharp cycle</span>
+          <div class="bet-card-dots"><span></span><span></span><span></span></div>
+        </div>
+        <div class="bet-card-body" id="bet-good-body">
+          <div class="bet-line">
+            <span class="bet-label">IDEA:</span>
+            <span class="bet-value">Show new users a personalized insight within 60 seconds of signup — onboarding should deliver value, not explain features.</span>
+          </div>
+          <div class="bet-line">
+            <span class="bet-label">BUILD:</span>
+            <span class="bet-value">AI-generated onboarding flow that imports sample data and surfaces a personalized insight. Shipped in an afternoon.</span>
+          </div>
+          <div class="bet-line">
+            <span class="bet-label">SIGNAL:</span>
+            <span class="bet-value">Rolled out to 15% of signups. Activation went from 12% to 14%. But insight-completers hit 38%. Right idea, wrong shape.</span>
+          </div>
+        </div>
+        <div class="bet-card-verdict">> concrete idea, working prototype, clear signal — iterate</div>
+      </div>
+
+      <div class="bet-card bet-card--bad" id="bet-bad">
+        <div class="bet-card-header">
+          <span class="bet-card-title">vague cycle</span>
+          <div class="bet-card-dots"><span></span><span></span><span></span></div>
+        </div>
+        <div class="bet-card-body">
+          <div class="bet-line">
+            <span class="bet-label">IDEA:</span>
+            <span class="bet-value">Make onboarding better.</span>
+          </div>
+          <div class="bet-line">
+            <span class="bet-label">BUILD:</span>
+            <span class="bet-value">Redesign the onboarding screens. Took 3 sprints.</span>
+          </div>
+          <div class="bet-line">
+            <span class="bet-label">SIGNAL:</span>
+            <span class="bet-value">Users said it "feels nicer." No metric moved.</span>
+          </div>
+        </div>
+        <div class="bet-card-verdict">> vague idea, over-built, no real signal — zombie feature</div>
+      </div>
+    </div>
+
+    <div class="bet-template" id="bet-template">
+      <div class="bet-template-label">> the format</div>
+      <div class="bet-template-lines">
+        <div class="bet-template-line"><span class="bet-label">IDEA:</span> <span class="bet-placeholder">[What you want to build and why it matters]</span></div>
+        <div class="bet-template-line"><span class="bet-label">BUILD:</span> <span class="bet-placeholder">[Ship it with AI — learn as you build]</span></div>
+        <div class="bet-template-line"><span class="bet-label">SIGNAL:</span> <span class="bet-placeholder">[Show it. What happened? Iterate, pivot, or trash.]</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== THE FULL STORY ==================== -->
+<section aria-label="The Full Story">
+  <div class="container">
+    <div class="story-header">
+      <div class="section-label">IN PRACTICE</div>
+      <h2 class="story-headline" data-splitting>Three cycles. Three weeks. Three answers.</h2>
+      <p class="story-subtitle">Watch BTTR play out across a real product. Meet <strong>Pulse</strong> — a B2B analytics tool.</p>
+    </div>
+
+    <div class="story-timeline" id="story-timeline">
+      <!-- Cycle 1: Iterate -->
+      <div class="story-cycle" id="story-cycle-1">
+        <div class="story-cycle-dot">C1</div>
+        <div class="story-card">
+          <div class="story-card-header">
+            <div class="story-bet-title">"Show users a personalized insight within 60 seconds of signup"</div>
+            <div class="story-outcome-badge story-outcome-badge--iterate">Iterate</div>
+          </div>
+          <div class="story-phases">
+            <div class="story-phase">
+              <div class="story-phase-label">Build</div>
+              <div class="story-phase-value">New onboarding flow: imports sample data, generates personalized insight</div>
+              <div class="story-phase-duration">1 day</div>
+            </div>
+            <div class="story-phase">
+              <div class="story-phase-label">Test</div>
+              <div class="story-phase-value">Rolled out to 15% of new signups. Measured activation over 4 days.</div>
+              <div class="story-phase-duration">4 days</div>
+            </div>
+            <div class="story-phase">
+              <div class="story-phase-label">Signal</div>
+              <div class="story-phase-value">Activation: <span class="story-signal-number">12% → 14%</span>. Not enough. But insight-completers: <span class="story-signal-number">38%</span></div>
+            </div>
+            <div class="story-phase">
+              <div class="story-phase-label">Decision</div>
+              <div class="story-phase-value">Right problem, wrong shape. 60% of users skipped the insight — it was buried in the UI.</div>
+            </div>
+          </div>
+          <div class="story-signal">> users who saw the insight loved it. users who didn't see it couldn't love it. fix the funnel.</div>
+        </div>
+      </div>
+
+      <!-- Cycle 2: Pivot -->
+      <div class="story-cycle" id="story-cycle-2">
+        <div class="story-cycle-dot">C2</div>
+        <div class="story-card">
+          <div class="story-card-header">
+            <div class="story-bet-title">"Make the insight un-skippable — required step in onboarding"</div>
+            <div class="story-outcome-badge story-outcome-badge--pivot">Pivot</div>
+          </div>
+          <div class="story-phases">
+            <div class="story-phase">
+              <div class="story-phase-label">Build</div>
+              <div class="story-phase-value">Rebuilt onboarding: insight is step 1, not optional sidebar. AI refactored the flow.</div>
+              <div class="story-phase-duration">0.5 days</div>
+            </div>
+            <div class="story-phase">
+              <div class="story-phase-label">Test</div>
+              <div class="story-phase-value">Same 15% holdout. 4 more days of data.</div>
+              <div class="story-phase-duration">4 days</div>
+            </div>
+            <div class="story-phase">
+              <div class="story-phase-label">Signal</div>
+              <div class="story-phase-value">Activation hit <span class="story-signal-number">26%</span>. Clear win — above the 20% threshold.</div>
+            </div>
+            <div class="story-phase">
+              <div class="story-phase-label">Decision</div>
+              <div class="story-phase-value">Activation solved. Don't over-optimize. Time to place a new bet on retention.</div>
+            </div>
+          </div>
+          <div class="story-signal">> bet paid off. activation is meaningfully solved. pivot to the next highest-value problem.</div>
+        </div>
+      </div>
+
+      <!-- Cycle 3: Trash -->
+      <div class="story-cycle" id="story-cycle-3">
+        <div class="story-cycle-dot">C3</div>
+        <div class="story-card">
+          <div class="story-card-header">
+            <div class="story-bet-title">"Send a 'your data changed' email at hour 48 to boost retention"</div>
+            <div class="story-outcome-badge story-outcome-badge--trash">Trash</div>
+          </div>
+          <div class="story-phases">
+            <div class="story-phase">
+              <div class="story-phase-label">Build</div>
+              <div class="story-phase-value">Automated email pipeline: detect data change, generate insight, send personalized email.</div>
+              <div class="story-phase-duration">1.5 days</div>
+            </div>
+            <div class="story-phase">
+              <div class="story-phase-label">Test</div>
+              <div class="story-phase-value">Triggered for all users who hadn't returned by hour 48. Measured 7-day retention.</div>
+              <div class="story-phase-duration">7 days</div>
+            </div>
+            <div class="story-phase">
+              <div class="story-phase-label">Signal</div>
+              <div class="story-phase-value">Retention: <span class="story-signal-number">31% → 33%</span>. Open rate 52%, click-through just 4%.</div>
+            </div>
+            <div class="story-phase">
+              <div class="story-phase-label">Decision</div>
+              <div class="story-phase-value">Users saw it but didn't care. Email isn't the right lever for retention. Kill it.</div>
+            </div>
+          </div>
+          <div class="story-signal">> the insight wasn't compelling enough to pull someone back. trash. rethink retention entirely.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-summary" id="story-summary">
+      <strong>Three cycles. Three weeks.</strong> One clear win, one iterated into success, one killed fast. In the old world, these would be three items on a roadmap debated for a quarter before any of them shipped.
+    </div>
+  </div>
+</section>
+
+<!-- ==================== THE CONTRAST ==================== -->
+<section aria-label="The Contrast">
+  <div class="container">
+    <div class="contrast-header">
+      <div class="section-label">THE CONTRAST</div>
+      <h2 class="contrast-headline" data-splitting>Two frameworks. Two philosophies.</h2>
+    </div>
+
+    <div class="contrast-grid">
+      <div class="contrast-card contrast-card--rice" aria-label="RICE approach" id="rice-contrast">
+        <div class="contrast-card-label">RICE</div>
+        <div class="contrast-tagline">"Should we build this?"</div>
+        <ol class="timeline">
+          <li class="timeline-step"><span class="timeline-circle"></span><span class="step-text">Score features in a spreadsheet<span class="step-strike"></span></span></li>
+          <li class="timeline-step"><span class="timeline-circle"></span><span class="step-text">Debate estimates in committee<span class="step-strike"></span></span></li>
+          <li class="timeline-step"><span class="timeline-circle"></span><span class="step-text">Estimate effort and timeline<span class="step-strike"></span></span></li>
+          <li class="timeline-step"><span class="timeline-circle"></span><span class="step-text">Wait for the next sprint<span class="step-strike"></span></span></li>
+          <li class="timeline-step"><span class="timeline-circle"></span><span class="step-text">Ship quarterly, if lucky<span class="step-strike"></span></span></li>
+          <li class="timeline-step"><span class="timeline-circle"></span><span class="step-text">Discover you were wrong<span class="step-strike"></span></span></li>
+        </ol>
+      </div>
+      <div class="contrast-card contrast-card--bttr" aria-label="BTTR approach" id="bttr-contrast">
+        <div class="contrast-card-label">BTTR</div>
+        <div class="contrast-tagline">"Build it and find out."</div>
+        <ol class="timeline">
+          <li class="timeline-step"><span class="timeline-circle"></span>Write a bet: problem, bet, test</li>
+          <li class="timeline-step"><span class="timeline-circle"></span>Build the minimum to get signal</li>
+          <li class="timeline-step"><span class="timeline-circle"></span>Ship it — building IS the validation</li>
+          <li class="timeline-step"><span class="timeline-circle"></span>Measure real signals, not opinions</li>
+          <li class="timeline-step"><span class="timeline-circle"></span>Kill what doesn't work — zero sunk cost</li>
+          <li class="timeline-step"><span class="timeline-circle"></span>Repeat — iterate, pivot, or move on</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== BTTR VS EVERYTHING ==================== -->
+<section aria-label="BTTR vs Everything">
+  <div class="container">
+    <div class="versus-header">
+      <div class="section-label">THE LANDSCAPE</div>
+      <h2 class="versus-headline" data-splitting>BTTR vs. Everything</h2>
+      <p class="versus-subtitle">How BTTR relates to the frameworks you already know.</p>
+    </div>
+
+    <div class="versus-table" id="versus-table">
+      <div class="versus-row versus-row--header">
+        <div class="versus-col versus-col--name">Framework</div>
+        <div class="versus-col versus-col--question">Core Question</div>
+        <div class="versus-col versus-col--cycle">Decides By</div>
+        <div class="versus-col versus-col--flaw">Blind Spot</div>
+        <div class="versus-col versus-col--verdict">Verdict</div>
+      </div>
+
+      <div class="versus-row" data-verdict="replaces">
+        <div class="versus-col versus-col--name"><span class="versus-fw-name">RICE / WSJF / ICE</span><span class="versus-fw-era">Pre-AI (2000s)</span></div>
+        <div class="versus-col versus-col--question">"What should we build?"</div>
+        <div class="versus-col versus-col--cycle">Spreadsheet scores</div>
+        <div class="versus-col versus-col--flaw">Build the wrong thing confidently.</div>
+        <div class="versus-col versus-col--verdict"><span class="verdict-badge verdict-badge--replaces">Replaced</span></div>
+      </div>
+
+      <div class="versus-row" data-verdict="evolves">
+        <div class="versus-col versus-col--name"><span class="versus-fw-name">Lean Startup</span><span class="versus-fw-era">2011</span></div>
+        <div class="versus-col versus-col--question">"Should we build this?"</div>
+        <div class="versus-col versus-col--cycle">Validated learning</div>
+        <div class="versus-col versus-col--flaw">Front-loads research before action.</div>
+        <div class="versus-col versus-col--verdict"><span class="verdict-badge verdict-badge--evolves">Evolved</span></div>
+      </div>
+
+      <div class="versus-row" data-verdict="uses">
+        <div class="versus-col versus-col--name"><span class="versus-fw-name">A/B Testing</span><span class="versus-fw-era">2000s+</span></div>
+        <div class="versus-col versus-col--question">"Which option is better?"</div>
+        <div class="versus-col versus-col--cycle">Statistical significance</div>
+        <div class="versus-col versus-col--flaw">Optimizes locally, misses the big picture.</div>
+        <div class="versus-col versus-col--verdict"><span class="verdict-badge verdict-badge--uses">Absorbed</span></div>
+      </div>
+
+      <div class="versus-row" data-verdict="complements">
+        <div class="versus-col versus-col--name"><span class="versus-fw-name">Design Thinking</span><span class="versus-fw-era">2000s</span></div>
+        <div class="versus-col versus-col--question">"Do we understand the problem?"</div>
+        <div class="versus-col versus-col--cycle">Empathy research</div>
+        <div class="versus-col versus-col--flaw">Research paralysis.</div>
+        <div class="versus-col versus-col--verdict"><span class="verdict-badge verdict-badge--complements">Complements</span></div>
+      </div>
+
+      <div class="versus-row versus-row--bttr">
+        <div class="versus-col versus-col--name"><span class="versus-fw-name">BTTR</span><span class="versus-fw-era">2024+</span></div>
+        <div class="versus-col versus-col--question">"What did we learn?"</div>
+        <div class="versus-col versus-col--cycle">Observed signal</div>
+        <div class="versus-col versus-col--flaw">Risk: trash too early. Mitigation: 3-cycle rule.</div>
+        <div class="versus-col versus-col--verdict"><span class="verdict-badge verdict-badge--bttr">The standard</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== THE MANIFESTO ==================== -->
+<section aria-label="The Manifesto" id="manifesto">
+  <div class="container">
+    <div class="manifesto-header">
+      <div class="section-label">THE MANIFESTO</div>
+      <h2 class="manifesto-headline" data-splitting>The BTTR Manifesto</h2>
+    </div>
+
+    <div class="manifesto-grid">
+      <div class="manifesto-item">
+        <div class="manifesto-item-inner">
+          <div class="manifesto-number">01</div>
+          <div class="manifesto-content">
+            <h3 class="manifesto-principle">Ship over spec.</h3>
+            <p class="manifesto-explanation">If you can build it faster than you can describe it, build it.</p>
+          </div>
+        </div>
+      </div>
+      <div class="manifesto-item">
+        <div class="manifesto-item-inner">
+          <div class="manifesto-number">02</div>
+          <div class="manifesto-content">
+            <h3 class="manifesto-principle">Trash without guilt.</h3>
+            <p class="manifesto-explanation">Killing what doesn't work is progress, not waste.</p>
+          </div>
+        </div>
+      </div>
+      <div class="manifesto-item">
+        <div class="manifesto-item-inner">
+          <div class="manifesto-number">03</div>
+          <div class="manifesto-content">
+            <h3 class="manifesto-principle">Bias toward concrete.</h3>
+            <p class="manifesto-explanation">Prototypes over presentations. Evidence over projections.</p>
+          </div>
+        </div>
+      </div>
+      <div class="manifesto-item">
+        <div class="manifesto-item-inner">
+          <div class="manifesto-number">04</div>
+          <div class="manifesto-content">
+            <h3 class="manifesto-principle">Stay opinionated.</h3>
+            <p class="manifesto-explanation">BTTR has a point of view. If that makes you uncomfortable, good.</p>
+          </div>
+        </div>
+      </div>
+      <div class="manifesto-item">
+        <div class="manifesto-item-inner">
+          <div class="manifesto-number">05</div>
+          <div class="manifesto-content">
+            <h3 class="manifesto-principle">Ideas first. Process second.</h3>
+            <p class="manifesto-explanation">Every breakthrough started as a hunch, not a hypothesis. Einstein didn't score relativity in a spreadsheet. Truth isn't predicted — it's revealed through action. The idea creates the process, not the other way around.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CTA ==================== -->
+<section class="cta-section" aria-label="Call to action">
+  <div class="container">
+    <h2 class="cta-headline" data-splitting>Stop scoring. Start shipping.</h2>
+    <div class="cta-terminal-wrap" id="cta-terminal">
+      <div class="cta-terminal-bar"><span></span><span></span><span></span></div>
+      <div class="cta-terminal-body">
+        <form class="cta-terminal-line" id="cta-form" aria-label="Email signup">
+          <span class="cta-terminal-prefix">&gt; bttr --subscribe</span>
+          <input type="email" class="cta-terminal-input" id="cta-email" placeholder="you@company.com" aria-label="Email address" required>
+          <button type="submit" class="cta-terminal-submit">⏎</button>
+        </form>
+      </div>
+      <div class="cta-terminal-output" id="cta-output">
+        <div class="cta-output-line cta-output-line--muted">resolving subscription...</div>
+        <div class="cta-output-line cta-output-line--green">✓ email verified</div>
+        <div class="cta-output-line cta-output-line--green">✓ framework guide queued</div>
+        <div class="cta-output-line cta-output-line--green">✓ cycle templates attached</div>
+        <div class="cta-output-line cta-output-line--green">✓ signal cheatsheet included</div>
+        <div class="cta-output-line cta-output-line--success">> welcome to BTTR. stop scoring. start shipping.</div>
+      </div>
+    </div>
+    <p class="cta-note">Get the full BTTR framework guide, ready-to-use cycle templates, and test signal cheatsheet. Free.</p>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="page-footer" role="contentinfo">
+  <div class="footer-brand">BTTR</div>
+  <div class="footer-tagline">Build, Test, Trash, Repeat.</div>
+  <div class="footer-version">&gt; bttr --version 0.5</div>
+  <div class="footer-copy">&copy; 2026 BTTR</div>
+</footer>
+
+<!-- CDN Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/splitting@1.0.6/dist/splitting.min.js"></script>
+
+<script>
+// ===================== INIT =====================
+gsap.registerPlugin(ScrollTrigger);
+
+// Initialize Splitting.js on all elements with data-splitting
+Splitting();
+
+// Set initial states — hide all split chars
+gsap.set('[data-splitting] .char', { opacity: 0, y: 20 });
+
+// ===================== SCROLL PROGRESS BAR =====================
+gsap.to('.scroll-progress', {
+  width: '100%',
+  ease: 'none',
+  scrollTrigger: {
+    trigger: document.body,
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: 0.3
+  }
+});
+
+// ===================== HERO SECTION =====================
+(function() {
+  var heroTL = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+  // BTTR title — character cascade
+  heroTL.to('.hero-brand .char', {
+    opacity: 1,
+    y: 0,
+    duration: 0.6,
+    stagger: 0.05
+  });
+
+  // Subtitle
+  heroTL.from('.hero-framework', {
+    opacity: 0,
+    y: 30,
+    duration: 0.7
+  }, '-=0.2');
+
+  // Tagline
+  heroTL.from('.hero-tagline', {
+    opacity: 0,
+    y: 25,
+    duration: 0.6
+  }, '-=0.4');
+
+  // Terminal line
+  heroTL.from('.hero-prompt', {
+    opacity: 0,
+    y: 20,
+    duration: 0.5
+  }, '-=0.3');
+
+  // CTA button
+  heroTL.from('.hero-cta-wrap', {
+    opacity: 0,
+    y: 20,
+    duration: 0.5
+  }, '-=0.2');
+
+  // Meta text
+  heroTL.from('.hero-meta', {
+    opacity: 0,
+    y: 15,
+    duration: 0.5
+  }, '-=0.2');
+
+  // Dot-grid parallax
+  gsap.to('.hero-grid-bg', {
+    yPercent: -30,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '.hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: true
+    }
+  });
+
+  // --- Magnetic BTTR letters ---
+  var heroChars = document.querySelectorAll('.hero-brand .char');
+  var heroSection = document.querySelector('.hero');
+  heroSection.addEventListener('mousemove', function(e) {
+    heroChars.forEach(function(c) {
+      var rect = c.getBoundingClientRect();
+      var cx = rect.left + rect.width / 2;
+      var cy = rect.top + rect.height / 2;
+      var dx = e.clientX - cx;
+      var dy = e.clientY - cy;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      var maxDist = 250;
+      if (dist < maxDist) {
+        var strength = (1 - dist / maxDist) * 12;
+        gsap.to(c, {
+          x: dx / dist * strength,
+          y: dy / dist * strength,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      } else {
+        gsap.to(c, { x: 0, y: 0, duration: 0.6, ease: 'power2.out' });
+      }
+    });
+  });
+  heroSection.addEventListener('mouseleave', function() {
+    heroChars.forEach(function(c) {
+      gsap.to(c, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.5)' });
+    });
+  });
+
+  // --- Cycling terminal prompts ---
+  var prompts = [
+    'RICE is dead. Start shipping.',
+    'Stop scoring. Start learning.',
+    'Effort → 0. The formula breaks.',
+    'Build it and find out.',
+    'Prioritization is dead.'
+  ];
+  var promptEl = document.getElementById('hero-prompt-text');
+  var promptIdx = 0;
+  if (promptEl) {
+    setInterval(function() {
+      promptEl.classList.add('fading');
+      setTimeout(function() {
+        promptIdx = (promptIdx + 1) % prompts.length;
+        promptEl.textContent = prompts[promptIdx];
+        promptEl.classList.remove('fading');
+      }, 300);
+    }, 4000);
+  }
+})();
+
+// ===================== PROBLEM SECTION =====================
+(function() {
+  var section = document.querySelector('[aria-label="The Problem"]');
+  var scorecard = document.getElementById('rice-scorecard');
+  var footnote = document.getElementById('rice-footnote');
+
+  // Section label
+  gsap.from(section.querySelector('.section-label'), {
+    opacity: 0, y: 30, duration: 0.6,
+    scrollTrigger: { trigger: section, start: 'top 75%' }
+  });
+
+  // Headline character cascade
+  gsap.to(section.querySelectorAll('.problem-headline .char'), {
+    opacity: 1, y: 0, duration: 0.4, stagger: 0.015, ease: 'power3.out',
+    scrollTrigger: { trigger: section.querySelector('.problem-headline'), start: 'top 75%' }
+  });
+
+  // Body text slides up
+  gsap.from(section.querySelector('.problem-body'), {
+    opacity: 0, y: 40, duration: 0.8, ease: 'power3.out',
+    scrollTrigger: { trigger: section.querySelector('.problem-body'), start: 'top 80%' }
+  });
+
+  // RICE card slides in from right with rotation
+  gsap.from(scorecard, {
+    opacity: 0, x: 80, rotation: 3, duration: 1, ease: 'power3.out',
+    scrollTrigger: { trigger: scorecard, start: 'top 75%' }
+  });
+
+  // Footnote fade in
+  ScrollTrigger.create({
+    trigger: scorecard,
+    start: 'top 60%',
+    once: true,
+    onEnter: function() {
+      gsap.delayedCall(1, function() {
+        if (footnote && !hasBroken) {
+          var fullText = footnote.textContent;
+          footnote.textContent = '';
+          footnote.style.opacity = 1;
+          var ci = 0;
+          function typeFootnote() {
+            if (ci < fullText.length) {
+              footnote.textContent += fullText.charAt(ci);
+              ci++;
+              setTimeout(typeFootnote, 30);
+            }
+          }
+          typeFootnote();
+        }
+      });
+    }
+  });
+
+  // ---- Interactive RICE Calculator ----
+  var reachSlider = document.getElementById('rice-reach');
+  var impactSlider = document.getElementById('rice-impact');
+  var confidenceSlider = document.getElementById('rice-confidence');
+  var effortSlider = document.getElementById('rice-effort');
+  var reachVal = document.getElementById('rice-reach-val');
+  var impactVal = document.getElementById('rice-impact-val');
+  var confidenceVal = document.getElementById('rice-confidence-val');
+  var effortVal = document.getElementById('rice-effort-val');
+  var scoreDisplay = document.getElementById('rice-score');
+  var glitchOverlay = document.getElementById('rice-glitch');
+  var crack = document.getElementById('rice-crack');
+  var divZero = document.getElementById('rice-divzero');
+  var bttrReveal = document.getElementById('rice-bttr-reveal');
+  var hasBroken = false;
+
+  function formatNum(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 10000) return Math.round(n).toLocaleString();
+    return Math.round(n).toLocaleString();
+  }
+
+  function calcRICE() {
+    var r = parseFloat(reachSlider.value);
+    var i = parseFloat(impactSlider.value);
+    var c = parseFloat(confidenceSlider.value) / 100;
+    var e = parseFloat(effortSlider.value);
+    return { reach: r, impact: i, confidence: c, effort: e, score: e > 0 ? (r * i * c) / e : Infinity };
+  }
+
+  function updateDisplay() {
+    if (hasBroken) return;
+    var vals = calcRICE();
+
+    reachVal.textContent = vals.reach.toLocaleString();
+    impactVal.textContent = vals.impact;
+    confidenceVal.textContent = Math.round(vals.confidence * 100) + '%';
+    effortVal.textContent = vals.effort;
+
+    // Effort danger zone
+    if (vals.effort <= 1) {
+      effortSlider.classList.add('danger');
+    } else {
+      effortSlider.classList.remove('danger');
+    }
+
+    if (vals.effort === 0) {
+      triggerBreak();
+      return;
+    }
+
+    // Score display
+    var score = vals.score;
+    scoreDisplay.textContent = formatNum(score);
+
+    // Escalation effects
+    if (score > 50000) {
+      scoreDisplay.classList.add('escalating');
+    } else {
+      scoreDisplay.classList.remove('escalating');
+    }
+
+    // Pre-break warning flicker
+    if (vals.effort <= 0.5 && vals.effort > 0) {
+      if (Math.random() > 0.5) {
+        glitchOverlay.classList.add('active');
+        setTimeout(function() { glitchOverlay.classList.remove('active'); }, 80);
+      }
+      // Score text scramble
+      if (Math.random() > 0.4) {
+        var chars = '!@#$%^&*ERR';
+        var scrambled = '';
+        for (var s = 0; s < 5; s++) scrambled += chars[Math.floor(Math.random() * chars.length)];
+        scoreDisplay.textContent = scrambled;
+        setTimeout(function() {
+          if (!hasBroken) scoreDisplay.textContent = formatNum(score);
+        }, 100);
+      }
+    }
+  }
+
+  function triggerBreak() {
+    if (hasBroken) return;
+    hasBroken = true;
+
+    // Phase 1: Glitch + shake (0-800ms)
+    scoreDisplay.textContent = '∞';
+    scoreDisplay.classList.add('broken');
+    glitchOverlay.classList.add('active');
+    scorecard.classList.add('shaking');
+    scorecard.style.borderColor = 'var(--red)';
+
+    // Scramble all values
+    var allVals = [reachVal, impactVal, confidenceVal, effortVal];
+    var scrambleInterval = setInterval(function() {
+      var chars = 'ERR!@#$%NaN∞';
+      allVals.forEach(function(el) {
+        var s = '';
+        for (var i = 0; i < 3; i++) s += chars[Math.floor(Math.random() * chars.length)];
+        el.textContent = s;
+      });
+      scoreDisplay.textContent = ['∞', 'NaN', 'ERR', '#DIV/0!', '∞'][Math.floor(Math.random() * 5)];
+    }, 60);
+
+    // Phase 2: Division by zero flash (800ms)
+    gsap.delayedCall(0.8, function() {
+      gsap.to(divZero, { opacity: 1, duration: 0.15 });
+      scorecard.classList.add('cracked');
+    });
+
+    // Phase 3: Flash out (1600ms)
+    gsap.delayedCall(1.6, function() {
+      clearInterval(scrambleInterval);
+      scorecard.classList.remove('shaking');
+      gsap.to(divZero, { opacity: 0, duration: 0.2 });
+      glitchOverlay.classList.remove('active');
+    });
+
+    // Phase 4: BTTR reveal (2000ms)
+    gsap.delayedCall(2, function() {
+      bttrReveal.classList.add('visible');
+
+      // Animate the reveal elements
+      gsap.from(bttrReveal.querySelector('.rice-bttr-reveal-label'), {
+        opacity: 0, y: -10, duration: 0.4, ease: 'power2.out'
+      });
+      gsap.from(bttrReveal.querySelectorAll('.pill-keep, .pill-op, .pill-signal'), {
+        opacity: 0, scale: 0.8, duration: 0.3, stagger: 0.08, ease: 'back.out(2)', delay: 0.2
+      });
+      gsap.from(bttrReveal.querySelector('.rice-bttr-reveal-msg'), {
+        opacity: 0, y: 10, duration: 0.4, delay: 0.6
+      });
+
+      // Update footnote
+      if (footnote) {
+        footnote.textContent = '';
+        footnote.style.opacity = 1;
+        var msg = 'effort → 0 = framework.broken() // welcome to BTTR';
+        var fi = 0;
+        function typeMsg() {
+          if (fi < msg.length) {
+            footnote.textContent += msg.charAt(fi);
+            fi++;
+            setTimeout(typeMsg, 25);
+          }
+        }
+        typeMsg();
+      }
+    });
+
+    // Disable sliders
+    [reachSlider, impactSlider, confidenceSlider, effortSlider].forEach(function(s) {
+      s.disabled = true;
+      s.style.opacity = '0.2';
+    });
+  }
+
+  // Bind slider events
+  [reachSlider, impactSlider, confidenceSlider, effortSlider].forEach(function(slider) {
+    slider.addEventListener('input', updateDisplay);
+  });
+})();
+
+// ===================== THESIS SECTION =====================
+(function() {
+  var section = document.querySelector('[aria-label="The Thesis"]');
+  var eq = document.getElementById('equation-visual');
+
+  // Section label
+  gsap.from(section.querySelector('.section-label'), {
+    opacity: 0,
+    y: 30,
+    duration: 0.6,
+    scrollTrigger: {
+      trigger: section,
+      start: 'top 75%'
+    }
+  });
+
+  // Headline character cascade
+  gsap.to(section.querySelectorAll('.thesis-headline .char'), {
+    opacity: 1,
+    y: 0,
+    duration: 0.4,
+    stagger: 0.012,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: section.querySelector('.thesis-headline'),
+      start: 'top 75%'
+    }
+  });
+
+  // Body text
+  gsap.from(section.querySelector('.thesis-body'), {
+    opacity: 0,
+    y: 40,
+    duration: 0.8,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: section.querySelector('.thesis-body'),
+      start: 'top 80%'
+    }
+  });
+
+  // Equation visual — scroll-linked animation
+  var eqTL = gsap.timeline({
+    scrollTrigger: {
+      trigger: eq,
+      start: 'top 70%',
+      toggleActions: 'play none none none'
+    },
+    defaults: { ease: 'power2.out' }
+  });
+
+  // RICE row pills fly in from left
+  var ricePills = eq.querySelectorAll('.eq-row--before .eq-pill, .eq-row--before .eq-operator');
+  gsap.set(ricePills, { opacity: 0, x: -40 });
+  eqTL.to(ricePills, {
+    opacity: 1,
+    x: 0,
+    duration: 0.3,
+    stagger: 0.05,
+    ease: 'power2.out'
+  });
+
+  // RICE label
+  gsap.set(eq.querySelector('.eq-row--before .eq-label'), { opacity: 0 });
+  eqTL.to(eq.querySelector('.eq-row--before .eq-label'), {
+    opacity: 1,
+    duration: 0.2
+  }, 0);
+
+  // After a beat, add struck class (Confidence & Effort shrink/red/strikethrough)
+  eqTL.add(function() {
+    eq.classList.add('struck');
+  }, '+=0.1');
+
+  // Divider arrow pulses
+  eqTL.fromTo(eq.querySelector('.eq-divider-arrow'), {
+    scale: 0.5,
+    opacity: 0
+  }, {
+    scale: 1,
+    opacity: 1,
+    duration: 0.2,
+    ease: 'back.out(2)'
+  }, '-=0.1');
+
+  // BTTR row pills fly in from right
+  var bttrPills = eq.querySelectorAll('.eq-row--after .eq-pill, .eq-row--after .eq-operator');
+  gsap.set(bttrPills, { opacity: 0, x: 40 });
+  eqTL.to(bttrPills, {
+    opacity: 1,
+    x: 0,
+    duration: 0.3,
+    stagger: 0.05,
+    ease: 'power2.out'
+  });
+
+  // BTTR label
+  gsap.set(eq.querySelector('.eq-row--after .eq-label'), { opacity: 0 });
+  eqTL.to(eq.querySelector('.eq-row--after .eq-label'), {
+    opacity: 1,
+    duration: 0.2
+  }, '<');
+
+  // Signal pill special pulse
+  eqTL.to(eq.querySelector('.eq-pill--signal'), {
+    boxShadow: '0 0 30px rgba(34, 197, 94, 0.4)',
+    duration: 0.3,
+    yoyo: true,
+    repeat: 1
+  });
+
+  // --- Click-to-trash interaction ---
+  var pillConf = document.getElementById('pill-confidence');
+  var pillEff = document.getElementById('pill-effort');
+  var trashZone = document.getElementById('eq-trash-zone');
+  var trashed = { confidence: false, effort: false };
+
+  function trashPill(pill, key) {
+    if (trashed[key] || !eq.classList.contains('struck')) return;
+    trashed[key] = true;
+    pill.classList.add('shattering');
+
+    // Flash trash zone
+    if (trashZone) {
+      trashZone.classList.add('pulse');
+      setTimeout(function() { trashZone.classList.remove('pulse'); }, 400);
+    }
+
+    // After shatter, check if both are trashed
+    setTimeout(function() {
+      pill.style.display = 'none';
+      // Also hide adjacent operator
+      var prev = pill.previousElementSibling;
+      if (prev && prev.classList.contains('eq-operator')) {
+        gsap.to(prev, { opacity: 0, scale: 0, duration: 0.3 });
+      }
+
+      if (trashed.confidence && trashed.effort) {
+        // Both trashed — pulse the BTTR row
+        eq.classList.remove('trash-ready');
+        gsap.to(eq.querySelectorAll('.eq-pill--glow, .eq-pill--signal'), {
+          boxShadow: '0 0 30px rgba(34, 197, 94, 0.4)',
+          duration: 0.4,
+          yoyo: true,
+          repeat: 2
+        });
+      }
+    }, 400);
+  }
+
+  // Show trash zone hint after scroll animation completes
+  eqTL.add(function() {
+    eq.classList.add('trash-ready');
+  }, '+=0.5');
+
+  if (pillConf) pillConf.addEventListener('click', function() { trashPill(pillConf, 'confidence'); });
+  if (pillEff) pillEff.addEventListener('click', function() { trashPill(pillEff, 'effort'); });
+})();
+
+// ===================== CYCLE SECTION =====================
+(function() {
+  var section = document.querySelector('[aria-label="The BTTR Cycle"]');
+  var phases = section.querySelectorAll('.cycle-phase-item');
+  var dot = document.getElementById('cycle-dot');
+  var trackFill = document.getElementById('cycle-track-fill');
+  var cmdPhase = document.getElementById('cmd-phase');
+  var phaseNames = ['build', 'test', 'trash', 'repeat'];
+  var cmdFlags = ['--ship-fast', '--real-signals', '--no-sunk-cost', '--learn-more'];
+
+  // Section label
+  gsap.from(section.querySelector('.section-label'), {
+    opacity: 0,
+    y: 30,
+    duration: 0.6,
+    scrollTrigger: { trigger: section, start: 'top 75%' }
+  });
+
+  // Headline character cascade
+  gsap.to(section.querySelectorAll('.cycle-headline .char'), {
+    opacity: 1, y: 0, duration: 0.4, stagger: 0.02, ease: 'power3.out',
+    scrollTrigger: { trigger: section.querySelector('.cycle-headline'), start: 'top 75%' }
+  });
+
+  // Subtitle
+  gsap.from(section.querySelector('.cycle-subtitle'), {
+    opacity: 0, y: 20, duration: 0.6,
+    scrollTrigger: { trigger: section.querySelector('.cycle-subtitle'), start: 'top 80%' }
+  });
+
+  // Pipeline animation — traveling dot activates each phase
+  var pipelineTL = gsap.timeline({
+    scrollTrigger: {
+      trigger: section.querySelector('.cycle-pipeline'),
+      start: 'top 65%',
+      toggleActions: 'play none none none'
+    },
+    defaults: { ease: 'power2.inOut' }
+  });
+
+  // Station positions — center of each 25% column (12.5%, 37.5%, 62.5%, 87.5%)
+  // Dot is 18px wide, station is 14px wide, track starts at calc(12.5% + 7px)
+  var stopPositions = ['calc(12.5% + 2px)', 'calc(37.5% - 2px)', 'calc(62.5% - 5px)', 'calc(87.5% - 9px)'];
+  var trackWidths = ['0%', '33%', '66%', '100%'];
+
+  // Phase items fade in from below first
+  pipelineTL.from(phases, {
+    opacity: 0, y: 40, duration: 0.6, stagger: 0.1, ease: 'power3.out'
+  });
+
+  // Terminal command fades in
+  pipelineTL.from(section.querySelector('.cycle-terminal'), {
+    opacity: 0, y: 20, duration: 0.5
+  }, '-=0.3');
+
+  // Loop arrow fades in
+  pipelineTL.from(section.querySelector('.cycle-loop'), {
+    opacity: 0, duration: 0.4
+  }, '-=0.2');
+
+  // Now the dot travels through each station sequentially
+  phases.forEach(function(phase, i) {
+    pipelineTL.to(dot, {
+      left: stopPositions[i],
+      duration: 0.6
+    }, i === 0 ? '+=0.3' : '+=0.3');
+
+    // Fill the track
+    pipelineTL.to(trackFill, {
+      width: trackWidths[i],
+      duration: 0.6
+    }, '<');
+
+    // Activate this phase
+    pipelineTL.add(function() {
+      phases.forEach(function(p) { p.classList.remove('active'); });
+      phase.classList.add('active');
+      if (cmdPhase) {
+        cmdPhase.textContent = phaseNames[i];
+        var flag = cmdPhase.nextElementSibling;
+        if (flag) flag.textContent = cmdFlags[i];
+      }
+    }, '<+=0.1');
+  });
+
+  // After completing all 4, start an infinite looping cycle
+  pipelineTL.add(function() {
+    var loopIdx = 0;
+    setInterval(function() {
+      loopIdx = (loopIdx + 1) % 4;
+      phases.forEach(function(p) { p.classList.remove('active'); });
+      phases[loopIdx].classList.add('active');
+
+      gsap.to(dot, {
+        left: stopPositions[loopIdx],
+        duration: 0.8, ease: 'power2.inOut'
+      });
+      gsap.to(trackFill, {
+        width: trackWidths[loopIdx],
+        duration: 0.8, ease: 'power2.inOut'
+      });
+
+      if (cmdPhase) {
+        cmdPhase.textContent = phaseNames[loopIdx];
+        var flag = cmdPhase.nextElementSibling;
+        if (flag) flag.textContent = cmdFlags[loopIdx];
+      }
+    }, 2500);
+  }, '+=1');
+
+  // Draw the loop-back path
+  var loopPath = document.getElementById('loop-path');
+  if (loopPath) {
+    var len = loopPath.getTotalLength();
+    gsap.set(loopPath, { strokeDasharray: len, strokeDashoffset: len });
+    pipelineTL.to(loopPath, {
+      strokeDashoffset: 0, duration: 1.2, ease: 'power2.inOut'
+    }, '-=3');
+  }
+
+  // --- Typeable terminal easter eggs ---
+  var cmdEl = document.getElementById('cycle-command');
+  var easterEgg = document.getElementById('cycle-easter-egg');
+  var typedCmd = '';
+  var knownCmds = {
+    'build': { phase: 0, msg: null },
+    'test': { phase: 1, msg: null },
+    'trash': { phase: 2, msg: null },
+    'repeat': { phase: 3, msg: null },
+    'rice': { phase: -1, msg: '> command not found. rice is deprecated.' },
+    'wsjf': { phase: -1, msg: '> command not found. try bttr instead.' },
+    'help': { phase: -1, msg: '> available: build, test, trash, repeat' },
+    'ship': { phase: 0, msg: '> alias for: bttr build --ship-fast' }
+  };
+
+  if (cmdEl) {
+    cmdEl.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace') {
+        typedCmd = typedCmd.slice(0, -1);
+      } else if (e.key === 'Enter') {
+        var cmd = typedCmd.toLowerCase().trim();
+        if (knownCmds[cmd]) {
+          var info = knownCmds[cmd];
+          if (info.phase >= 0) {
+            // Jump to that phase
+            phases.forEach(function(p) { p.classList.remove('active'); });
+            phases[info.phase].classList.add('active');
+            gsap.to(dot, { left: stopPositions[info.phase], duration: 0.6, ease: 'power2.inOut' });
+            gsap.to(trackFill, { width: trackWidths[info.phase], duration: 0.6, ease: 'power2.inOut' });
+            cmdPhase.textContent = phaseNames[info.phase];
+            var flagEl = document.getElementById('cmd-flag');
+            if (flagEl) flagEl.textContent = cmdFlags[info.phase];
+          }
+          if (info.msg && easterEgg) {
+            easterEgg.textContent = info.msg;
+            easterEgg.classList.add('show');
+            setTimeout(function() { easterEgg.classList.remove('show'); }, 3000);
+          }
+        }
+        typedCmd = '';
+      } else if (e.key.length === 1) {
+        typedCmd += e.key;
+      }
+
+      // Show typed text in the active span
+      if (typedCmd.length > 0) {
+        cmdPhase.textContent = typedCmd;
+      }
+
+      e.preventDefault();
+    });
+  }
+})();
+
+// ===================== CONTRAST SECTION =====================
+(function() {
+  var section = document.querySelector('[aria-label="The Contrast"]');
+  var riceCard = document.getElementById('rice-contrast');
+  var bttrCard = document.getElementById('bttr-contrast');
+
+  // Section label
+  gsap.from(section.querySelector('.section-label'), {
+    opacity: 0,
+    y: 30,
+    duration: 0.6,
+    scrollTrigger: {
+      trigger: section,
+      start: 'top 75%'
+    }
+  });
+
+  // Headline character cascade
+  gsap.to(section.querySelectorAll('.contrast-headline .char'), {
+    opacity: 1,
+    y: 0,
+    duration: 0.4,
+    stagger: 0.015,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: section.querySelector('.contrast-headline'),
+      start: 'top 75%'
+    }
+  });
+
+  // RICE column slides in from left, muted
+  gsap.from(riceCard, {
+    opacity: 0,
+    x: -60,
+    duration: 0.9,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: section.querySelector('.contrast-grid'),
+      start: 'top 70%'
+    }
+  });
+
+  // BTTR column slides in from right, vibrant
+  gsap.from(bttrCard, {
+    opacity: 0,
+    x: 60,
+    duration: 0.9,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: section.querySelector('.contrast-grid'),
+      start: 'top 70%'
+    }
+  });
+
+  // RICE timeline steps — stagger in
+  var riceSteps = riceCard.querySelectorAll('.timeline-step');
+  gsap.from(riceSteps, {
+    opacity: 0, x: -20, duration: 0.4, stagger: 0.1, ease: 'power2.out',
+    scrollTrigger: { trigger: riceCard, start: 'top 65%' }
+  });
+
+  // BTTR timeline steps — stagger in
+  var bttrSteps = bttrCard.querySelectorAll('.timeline-step');
+  gsap.from(bttrSteps, {
+    opacity: 0, x: -20, duration: 0.4, stagger: 0.1, ease: 'power2.out',
+    scrollTrigger: { trigger: bttrCard, start: 'top 65%' }
+  });
+
+  // Scroll-scrubbed strikethrough: as user scrolls through section,
+  // RICE steps get struck through one by one while BTTR steps light up
+  ScrollTrigger.create({
+    trigger: section.querySelector('.contrast-grid'),
+    start: 'top 40%',
+    end: 'bottom 30%',
+    scrub: false,
+    once: false,
+    onEnter: function() {
+      // Strike through RICE steps one by one (slow enough to read)
+      riceSteps.forEach(function(step, i) {
+        setTimeout(function() {
+          step.classList.add('struck');
+        }, i * 500);
+      });
+      // Light up BTTR steps in sync
+      bttrSteps.forEach(function(step, i) {
+        setTimeout(function() {
+          step.classList.add('lit');
+        }, i * 500);
+      });
+    },
+    onLeaveBack: function() {
+      // Reset if user scrolls back up
+      riceSteps.forEach(function(step) { step.classList.remove('struck'); });
+      bttrSteps.forEach(function(step) { step.classList.remove('lit'); });
+    }
+  });
+})();
+
+// ===================== MANIFESTO SECTION =====================
+(function() {
+  var section = document.querySelector('[aria-label="The Manifesto"]');
+  var items = section.querySelectorAll('.manifesto-item');
+  var numbers = section.querySelectorAll('.manifesto-number');
+
+  // Section label
+  gsap.from(section.querySelector('.section-label'), {
+    opacity: 0,
+    y: 30,
+    duration: 0.6,
+    scrollTrigger: {
+      trigger: section,
+      start: 'top 75%'
+    }
+  });
+
+  // Headline character cascade
+  gsap.to(section.querySelectorAll('.manifesto-headline .char'), {
+    opacity: 1,
+    y: 0,
+    duration: 0.4,
+    stagger: 0.02,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: section.querySelector('.manifesto-headline'),
+      start: 'top 75%'
+    }
+  });
+
+  // --- Number scramble-resolve effect ---
+  var scrambleChars = '!@#$%^&*<>{}[]~=+';
+  numbers.forEach(function(num) {
+    var finalText = num.textContent;
+    num.textContent = '';
+
+    ScrollTrigger.create({
+      trigger: num,
+      start: 'top 80%',
+      once: true,
+      onEnter: function() {
+        var iterations = 0;
+        var maxIterations = 12;
+        var interval = setInterval(function() {
+          if (iterations >= maxIterations) {
+            clearInterval(interval);
+            num.textContent = finalText;
+            gsap.to(num, { color: 'var(--green-dim)', duration: 0.5 });
+            return;
+          }
+          var scrambled = '';
+          for (var c = 0; c < finalText.length; c++) {
+            if (iterations > maxIterations * (c / finalText.length)) {
+              scrambled += finalText[c];
+            } else {
+              scrambled += scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+            }
+          }
+          num.textContent = scrambled;
+          iterations++;
+        }, 50);
+      }
+    });
+  });
+
+  // Each manifesto item slides in from left
+  items.forEach(function(item) {
+    gsap.from(item, {
+      opacity: 0, x: -50, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: item, start: 'top 80%' }
+    });
+  });
+})();
+
+// ===================== BET TEMPLATE SECTION =====================
+(function() {
+  var section = document.querySelector('[aria-label="The Cycle Format"]');
+  var goodCard = document.getElementById('bet-good');
+  var badCard = document.getElementById('bet-bad');
+
+  // Section label
+  gsap.from(section.querySelector('.section-label'), {
+    opacity: 0, y: 30, duration: 0.6,
+    scrollTrigger: { trigger: section, start: 'top 75%' }
+  });
+
+  // Headline character cascade
+  gsap.to(section.querySelectorAll('.bet-headline .char'), {
+    opacity: 1, y: 0, duration: 0.4, stagger: 0.02, ease: 'power3.out',
+    scrollTrigger: { trigger: section.querySelector('.bet-headline'), start: 'top 75%' }
+  });
+
+  // Subtitle
+  gsap.from(section.querySelector('.bet-subtitle'), {
+    opacity: 0, y: 20, duration: 0.6,
+    scrollTrigger: { trigger: section.querySelector('.bet-subtitle'), start: 'top 80%' }
+  });
+
+  // Good bet card — typewriter effect
+  ScrollTrigger.create({
+    trigger: goodCard,
+    start: 'top 70%',
+    once: true,
+    onEnter: function() {
+      var body = document.getElementById('bet-good-body');
+      var lines = body.querySelectorAll('.bet-value');
+      lines.forEach(function(line) {
+        line.dataset.fullText = line.textContent;
+        line.textContent = '';
+      });
+
+      var lineIdx = 0;
+      function typeLine() {
+        if (lineIdx >= lines.length) return;
+        var line = lines[lineIdx];
+        var fullText = line.dataset.fullText;
+        var charIdx = 0;
+        function typeChar() {
+          if (charIdx < fullText.length) {
+            line.textContent += fullText.charAt(charIdx);
+            charIdx++;
+            setTimeout(typeChar, 18);
+          } else {
+            lineIdx++;
+            setTimeout(typeLine, 200);
+          }
+        }
+        typeChar();
+      }
+
+      gsap.from(goodCard, {
+        opacity: 0, y: 30, duration: 0.6, ease: 'power3.out',
+        onComplete: typeLine
+      });
+    }
+  });
+
+  // Bad bet card — slides in then gets struck through
+  ScrollTrigger.create({
+    trigger: badCard,
+    start: 'top 70%',
+    once: true,
+    onEnter: function() {
+      gsap.from(badCard, {
+        opacity: 0, y: 30, duration: 0.6, ease: 'power3.out',
+        onComplete: function() {
+          gsap.delayedCall(0.6, function() {
+            badCard.classList.add('struck');
+          });
+        }
+      });
+    }
+  });
+
+  // Template fade in
+  var betTemplate = document.getElementById('bet-template');
+  if (betTemplate) {
+    gsap.from(betTemplate, {
+      opacity: 0, y: 20, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: betTemplate, start: 'top 85%' }
+    });
+  }
+})();
+
+// ===================== FULL STORY SECTION =====================
+(function() {
+  var section = document.querySelector('[aria-label="The Full Story"]');
+  var cycles = section.querySelectorAll('.story-cycle');
+  var summary = document.getElementById('story-summary');
+
+  // Section label
+  gsap.from(section.querySelector('.section-label'), {
+    opacity: 0, y: 30, duration: 0.6,
+    scrollTrigger: { trigger: section, start: 'top 75%' }
+  });
+
+  // Headline character cascade
+  gsap.to(section.querySelectorAll('.story-headline .char'), {
+    opacity: 1, y: 0, duration: 0.4, stagger: 0.02, ease: 'power3.out',
+    scrollTrigger: { trigger: section.querySelector('.story-headline'), start: 'top 75%' }
+  });
+
+  // Subtitle
+  gsap.from(section.querySelector('.story-subtitle'), {
+    opacity: 0, y: 20, duration: 0.6,
+    scrollTrigger: { trigger: section.querySelector('.story-subtitle'), start: 'top 80%' }
+  });
+
+  // Each cycle card reveals on scroll with stagger
+  cycles.forEach(function(cycle, i) {
+    var card = cycle.querySelector('.story-card');
+    var dot = cycle.querySelector('.story-cycle-dot');
+    var phases = cycle.querySelectorAll('.story-phase');
+
+    // Card slides in from left
+    gsap.from(card, {
+      opacity: 0, x: -40, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: cycle, start: 'top 75%' }
+    });
+
+    // Dot on timeline
+    gsap.from(dot, {
+      opacity: 0, scale: 0.5, duration: 0.5, ease: 'back.out(2)',
+      scrollTrigger: { trigger: cycle, start: 'top 75%' }
+    });
+
+    // Phase columns stagger in
+    gsap.from(phases, {
+      opacity: 0, y: 20, duration: 0.4, stagger: 0.1, ease: 'power2.out',
+      scrollTrigger: { trigger: card, start: 'top 70%' }
+    });
+
+    // Outcome badge stamps in + counting metrics + card flash
+    ScrollTrigger.create({
+      trigger: card,
+      start: 'top 65%',
+      once: true,
+      onEnter: function() {
+        // Count up signal numbers
+        var signalNums = card.querySelectorAll('.story-signal-number');
+        signalNums.forEach(function(el) {
+          var text = el.textContent;
+          var match = text.match(/(\d+)%/);
+          if (match) {
+            var target = parseInt(match[1]);
+            var current = { val: 0 };
+            gsap.to(current, {
+              val: target,
+              duration: 1.2,
+              ease: 'power2.out',
+              onUpdate: function() {
+                el.textContent = text.replace(/\d+%/, Math.round(current.val) + '%');
+              }
+            });
+          }
+        });
+
+        gsap.delayedCall(0.6, function() {
+          cycle.classList.add('revealed');
+          // Flash card border with outcome color
+          var badge = cycle.querySelector('.story-outcome-badge');
+          if (badge) {
+            var flashClass = badge.classList.contains('story-outcome-badge--iterate') ? 'flash-iterate' :
+              badge.classList.contains('story-outcome-badge--pivot') ? 'flash-pivot' : 'flash-trash';
+            card.classList.add(flashClass);
+            setTimeout(function() { card.classList.remove(flashClass); }, 800);
+          }
+        });
+      }
+    });
+  });
+
+  // Summary fades in
+  if (summary) {
+    gsap.from(summary, {
+      opacity: 0, y: 30, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: summary, start: 'top 85%' }
+    });
+  }
+})();
+
+// ===================== BTTR VS EVERYTHING SECTION =====================
+(function() {
+  var section = document.querySelector('[aria-label="BTTR vs Everything"]');
+  var rows = section.querySelectorAll('.versus-row:not(.versus-row--header)');
+
+  // Section label
+  gsap.from(section.querySelector('.section-label'), {
+    opacity: 0, y: 30, duration: 0.6,
+    scrollTrigger: { trigger: section, start: 'top 75%' }
+  });
+
+  // Headline character cascade
+  gsap.to(section.querySelectorAll('.versus-headline .char'), {
+    opacity: 1, y: 0, duration: 0.4, stagger: 0.02, ease: 'power3.out',
+    scrollTrigger: { trigger: section.querySelector('.versus-headline'), start: 'top 75%' }
+  });
+
+  // Subtitle
+  gsap.from(section.querySelector('.versus-subtitle'), {
+    opacity: 0, y: 20, duration: 0.6,
+    scrollTrigger: { trigger: section.querySelector('.versus-subtitle'), start: 'top 80%' }
+  });
+
+  // Rows stagger in from below
+  gsap.from(rows, {
+    opacity: 0, y: 30, duration: 0.5, stagger: 0.08, ease: 'power3.out',
+    scrollTrigger: {
+      trigger: section.querySelector('.versus-table'),
+      start: 'top 70%'
+    }
+  });
+
+  // Verdict badges pop in after rows
+  var badges = section.querySelectorAll('.verdict-badge');
+  gsap.from(badges, {
+    opacity: 0, scale: 0.5, duration: 0.4, stagger: 0.08, ease: 'back.out(2)',
+    scrollTrigger: {
+      trigger: section.querySelector('.versus-table'),
+      start: 'top 55%'
+    }
+  });
+})();
+
+// ===================== CTA SECTION =====================
+(function() {
+  var section = document.querySelector('[aria-label="Call to action"]');
+
+  // Headline character cascade — animate by words, then chars within words
+  gsap.to(section.querySelectorAll('.cta-headline .word'), {
+    opacity: 1,
+    duration: 0.01,
+    stagger: 0.1,
+    scrollTrigger: {
+      trigger: section,
+      start: 'top 75%'
+    }
+  });
+
+  gsap.to(section.querySelectorAll('.cta-headline .char'), {
+    opacity: 1,
+    y: 0,
+    duration: 0.4,
+    stagger: 0.02,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: section.querySelector('.cta-headline'),
+      start: 'top 75%'
+    }
+  });
+
+  // Terminal wrap slides up
+  var ctaTerminal = document.getElementById('cta-terminal');
+  gsap.from(ctaTerminal, {
+    opacity: 0, y: 40, duration: 0.8, ease: 'power3.out',
+    scrollTrigger: { trigger: ctaTerminal, start: 'top 85%' }
+  });
+
+  // Note fades in last
+  gsap.from(section.querySelector('.cta-note'), {
+    opacity: 0, y: 20, duration: 0.6, ease: 'power3.out',
+    scrollTrigger: { trigger: section.querySelector('.cta-note'), start: 'top 90%' }
+  });
+
+  // CTA terminal submission handler
+  var form = document.getElementById('cta-form');
+  var output = document.getElementById('cta-output');
+  var emailInput = document.getElementById('cta-email');
+
+  if (form && output) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var email = emailInput.value;
+      if (!email) return;
+
+      // Hide input line
+      form.style.opacity = '0.3';
+      form.style.pointerEvents = 'none';
+
+      // Show output container
+      output.classList.add('show');
+
+      // Type out each line sequentially
+      var lines = output.querySelectorAll('.cta-output-line');
+      lines.forEach(function(line, i) {
+        setTimeout(function() {
+          line.classList.add('typed');
+        }, (i + 1) * 400);
+      });
+
+      // After all lines, pulse the terminal green
+      setTimeout(function() {
+        ctaTerminal.style.borderColor = 'var(--green)';
+        ctaTerminal.style.boxShadow = '0 0 30px rgba(34, 197, 94, 0.1)';
+      }, lines.length * 400 + 300);
+    });
+  }
+})();
+
+// ===================== SMOOTH SCROLL =====================
+document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    var target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>

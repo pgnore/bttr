@@ -1,0 +1,33 @@
+# OS
+.DS_Store
+
+# Environment
+.env
+.env.local
+node_modules/
+dist/
+build/
+*.log
+
+# Claude Code
+.claude/settings.local.json
+
+# Generated videos & temp frames
+*.mp4
+*.wav
+frames_*/
+
+# Design iteration screenshots (not source assets)
+bliq-*.png
+review-*.png
+v5-*.png
+v6-*.png
+v7-*.png
+final-*.png
+
+# Old variants
+index-light.html
+
+# Obsidian / Playwright local config
+.obsidian/
+.playwright-mcp/
