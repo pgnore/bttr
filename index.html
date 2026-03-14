@@ -7,11 +7,13 @@
 <meta name="description" content="BTTR: Build, Test, Trash, Repeat. The product management framework for the AI era. RICE is dead. Start shipping.">
 <meta property="og:title" content="BTTR — The Better Framework">
 <meta property="og:description" content="Build, Test, Trash, Repeat. The product management framework for the AI era.">
-<meta property="og:image" content="og-image.svg">
+<meta property="og:url" content="https://bttr.pm">
+<meta property="og:image" content="https://bttr.pm/og-image.svg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="BTTR — The Better Framework">
 <meta name="twitter:description" content="Build, Test, Trash, Repeat. The product management framework for the AI era.">
+<link rel="canonical" href="https://bttr.pm">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4231,6 +4233,16 @@ gsap.to('.scroll-progress', {
       // Hide input line
       form.style.opacity = '0.3';
       form.style.pointerEvents = 'none';
+
+      // Send to Formspree (replace YOUR_FORM_ID with actual ID)
+      var FORMSPREE_ID = 'YOUR_FORM_ID';
+      if (FORMSPREE_ID !== 'YOUR_FORM_ID') {
+        fetch('https://formspree.io/f/' + FORMSPREE_ID, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, _subject: 'New BTTR signup' })
+        }).catch(function() {});
+      }
 
       // Show output container
       output.classList.add('show');
